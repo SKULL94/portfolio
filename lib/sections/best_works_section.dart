@@ -17,49 +17,50 @@ class _BestWorksSectionState extends State<BestWorksSection> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    final isTablet = Responsive.isTablet(context);
+    final r = Responsive(context);
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: Responsive.getHorizontalPadding(context),
-        vertical: 100,
+        horizontal: r.horizontalPadding,
+        vertical: r.sectionVerticalPadding,
       ),
-      decoration: BoxDecoration(color: AppTheme.darkBg),
+      decoration: const BoxDecoration(color: AppTheme.darkBg),
       child: Column(
         children: [
-          _buildSectionTitle(context),
-          const SizedBox(height: 20),
+          _buildSectionTitle(context, r),
+          SizedBox(height: r.spacing(20)),
           Text(
             'Featured projects showcasing end-to-end development expertise',
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontSize: r.fontSize(14),
+                ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 60),
+          SizedBox(height: r.spacing(60)),
 
           // Work Selector Tabs
-          _buildWorkSelector(context, isMobile),
-          const SizedBox(height: 40),
+          _buildWorkSelector(context, r),
+          SizedBox(height: r.spacing(40)),
 
           // Selected Work Detail Card
-          _buildWorkDetailCard(
-            context,
-            bestWorks[_selectedWorkIndex],
-            isMobile,
-            isTablet,
-          ),
+          _buildWorkDetailCard(context, bestWorks[_selectedWorkIndex], r),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context) {
+  Widget _buildSectionTitle(BuildContext context, Responsive r) {
     return Column(
       children: [
-        Text('Best Works', style: Theme.of(context).textTheme.displayMedium),
-        const SizedBox(height: 16),
+        Text(
+          'Best Works',
+          style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                fontSize: r.fontSize(40),
+              ),
+        ),
+        SizedBox(height: r.spacing(16)),
         Container(
-          width: 80,
+          width: r.value(mobile: 60, desktop: 80),
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
@@ -70,7 +71,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
     );
   }
 
-  Widget _buildWorkSelector(BuildContext context, bool isMobile) {
+  Widget _buildWorkSelector(BuildContext context, Responsive r) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -80,7 +81,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
           final isSelected = _selectedWorkIndex == index;
 
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: isMobile ? 6 : 10),
+            padding: EdgeInsets.symmetric(horizontal: r.spacing(8)),
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -91,8 +92,8 @@ class _BestWorksSectionState extends State<BestWorksSection> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 16 : 24,
-                  vertical: isMobile ? 12 : 16,
+                  horizontal: r.spacing(20),
+                  vertical: r.spacing(12),
                 ),
                 decoration: BoxDecoration(
                   gradient: isSelected ? AppTheme.primaryGradient : null,
@@ -121,7 +122,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                       Container(
                         width: 8,
                         height: 8,
-                        margin: const EdgeInsets.only(right: 8),
+                        margin: EdgeInsets.only(right: r.spacing(8)),
                         decoration: BoxDecoration(
                           color: Colors.greenAccent,
                           shape: BoxShape.circle,
@@ -137,10 +138,9 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                       work.name,
                       style: TextStyle(
                         color: isSelected ? Colors.white : AppTheme.subtleText,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                        fontSize: isMobile ? 13 : 15,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
+                        fontSize: r.fontSize(14),
                       ),
                     ),
                   ],
@@ -154,51 +154,47 @@ class _BestWorksSectionState extends State<BestWorksSection> {
   }
 
   Widget _buildWorkDetailCard(
-    BuildContext context,
-    BestWork work,
-    bool isMobile,
-    bool isTablet,
-  ) {
+      BuildContext context, BestWork work, Responsive r) {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.cardBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(r.cardRadius + 4),
         border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
+            blurRadius: r.value(mobile: 20, desktop: 30),
+            offset: Offset(0, r.value(mobile: 10, desktop: 15)),
           ),
         ],
       ),
       child: Column(
         children: [
           // Header with status badge
-          _buildCardHeader(context, work, isMobile),
+          _buildCardHeader(context, work, r),
 
           // Main content - Screenshots & Info
           Padding(
-            padding: EdgeInsets.all(isMobile ? 20 : 32),
-            child: isMobile
+            padding: EdgeInsets.all(r.spacing(28)),
+            child: r.isMobile
                 ? Column(
                     children: [
-                      _buildScreenshotArea(context, work, isMobile),
-                      const SizedBox(height: 32),
-                      _buildInfoArea(context, work, isMobile),
+                      _buildScreenshotArea(context, work, r),
+                      SizedBox(height: r.spacing(32)),
+                      _buildInfoArea(context, work, r),
                     ],
                   )
                 : Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        flex: isTablet ? 5 : 4,
-                        child: _buildScreenshotArea(context, work, isMobile),
+                        flex: r.isTablet ? 5 : 4,
+                        child: _buildScreenshotArea(context, work, r),
                       ),
-                      const SizedBox(width: 40),
+                      SizedBox(width: r.spacing(40)),
                       Expanded(
-                        flex: isTablet ? 5 : 6,
-                        child: _buildInfoArea(context, work, isMobile),
+                        flex: r.isTablet ? 5 : 6,
+                        child: _buildInfoArea(context, work, r),
                       ),
                     ],
                   ),
@@ -208,9 +204,10 @@ class _BestWorksSectionState extends State<BestWorksSection> {
     );
   }
 
-  Widget _buildCardHeader(BuildContext context, BestWork work, bool isMobile) {
+  Widget _buildCardHeader(BuildContext context, BestWork work, Responsive r) {
     return Container(
-      padding: EdgeInsets.all(isMobile ? 20 : 28),
+      width: double.infinity,
+      padding: EdgeInsets.all(r.spacing(24)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -220,21 +217,24 @@ class _BestWorksSectionState extends State<BestWorksSection> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(r.cardRadius + 4),
+          topRight: Radius.circular(r.cardRadius + 4),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: r.spacing(12),
+            runSpacing: r.spacing(8),
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               // Category badge
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 6,
+                padding: EdgeInsets.symmetric(
+                  horizontal: r.spacing(14),
+                  vertical: r.spacing(6),
                 ),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor.withValues(alpha: 0.2),
@@ -244,17 +244,16 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                   work.category,
                   style: TextStyle(
                     color: AppTheme.secondaryColor,
-                    fontSize: 12,
+                    fontSize: r.fontSize(12),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
               // Status badge
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 6,
+                padding: EdgeInsets.symmetric(
+                  horizontal: r.spacing(14),
+                  vertical: r.spacing(6),
                 ),
                 decoration: BoxDecoration(
                   color: work.status == 'In Progress'
@@ -269,7 +268,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                       Container(
                         width: 6,
                         height: 6,
-                        margin: const EdgeInsets.only(right: 6),
+                        margin: EdgeInsets.only(right: r.spacing(6)),
                         decoration: const BoxDecoration(
                           color: Colors.greenAccent,
                           shape: BoxShape.circle,
@@ -281,41 +280,42 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                         color: work.status == 'In Progress'
                             ? Colors.greenAccent
                             : AppTheme.secondaryColor,
-                        fontSize: 12,
+                        fontSize: r.fontSize(12),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Spacer(),
-              // Links
-              if (work.githubLink != null)
+              // GitHub link
+              if (work.githubLink != null && !r.isMobile)
                 IconButton(
                   onPressed: () => _launchUrl(work.githubLink!),
-                  icon: const FaIcon(
+                  icon: FaIcon(
                     FontAwesomeIcons.github,
                     color: AppTheme.lightText,
-                    size: 20,
+                    size: r.iconSize,
                   ),
                   tooltip: 'View on GitHub',
                 ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: r.spacing(16)),
           Text(
             work.name,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: r.fontSize(28),
+                ),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: r.spacing(6)),
           Text(
             work.tagline,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppTheme.secondaryColor,
-              fontWeight: FontWeight.w500,
-            ),
+                  color: AppTheme.secondaryColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: r.fontSize(16),
+                ),
           ),
         ],
       ),
@@ -323,17 +323,21 @@ class _BestWorksSectionState extends State<BestWorksSection> {
   }
 
   Widget _buildScreenshotArea(
-    BuildContext context,
-    BestWork work,
-    bool isMobile,
-  ) {
+      BuildContext context, BestWork work, Responsive r) {
     return Column(
       children: [
         Container(
-          constraints: BoxConstraints(maxHeight: isMobile ? 350 : 450),
+          constraints: BoxConstraints(
+            maxHeight: r.value(
+              mobile: r.height * 0.4,
+              smallPhone: r.height * 0.35,
+              tablet: 400,
+              desktop: 450,
+            ),
+          ),
           decoration: BoxDecoration(
             color: AppTheme.darkBg,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(r.cardRadius),
             border: Border.all(
               color: AppTheme.primaryColor.withValues(alpha: 0.3),
               width: 2,
@@ -347,12 +351,13 @@ class _BestWorksSectionState extends State<BestWorksSection> {
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(r.cardRadius - 2),
             child: Stack(
               children: [
                 Center(
                   child: _buildScreenshotImage(
                     work.screenshots[_currentScreenshotIndex],
+                    r,
                   ),
                 ),
 
@@ -364,10 +369,10 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                     child: Center(
                       child: _buildNavArrow(
                         icon: Icons.chevron_left,
+                        r: r,
                         onTap: () {
                           setState(() {
-                            _currentScreenshotIndex =
-                                (_currentScreenshotIndex -
+                            _currentScreenshotIndex = (_currentScreenshotIndex -
                                     1 +
                                     work.screenshots.length) %
                                 work.screenshots.length;
@@ -384,25 +389,27 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                     child: Center(
                       child: _buildNavArrow(
                         icon: Icons.chevron_right,
+                        r: r,
                         onTap: () {
                           setState(() {
-                            _currentScreenshotIndex =
-                                (_currentScreenshotIndex + 1) %
+                            _currentScreenshotIndex = (_currentScreenshotIndex +
+                                    1) %
                                 work.screenshots.length;
                           });
                         },
                       ),
                     ),
                   ),
+                // Counter
                 Positioned(
                   bottom: 12,
                   left: 0,
                   right: 0,
                   child: Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: r.spacing(12),
+                        vertical: r.spacing(6),
                       ),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.7),
@@ -410,9 +417,9 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                       ),
                       child: Text(
                         '${_currentScreenshotIndex + 1} / ${work.screenshots.length}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: r.fontSize(12),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -424,62 +431,71 @@ class _BestWorksSectionState extends State<BestWorksSection> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: r.spacing(16)),
 
+        // Thumbnails
         if (work.screenshots.length > 1)
           SizedBox(
-            height: 60,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(work.screenshots.length, (index) {
-                final isActive = index == _currentScreenshotIndex;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _currentScreenshotIndex = index;
-                    });
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: isActive ? 70 : 55,
-                    height: isActive ? 55 : 45,
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isActive
-                            ? AppTheme.primaryColor
-                            : AppTheme.primaryColor.withValues(alpha: 0.3),
-                        width: isActive ? 2 : 1,
-                      ),
-                      boxShadow: isActive
-                          ? [
-                              BoxShadow(
-                                color: AppTheme.primaryColor.withValues(
-                                  alpha: 0.3,
+            height: r.value(mobile: 50, desktop: 60),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(work.screenshots.length, (index) {
+                  final isActive = index == _currentScreenshotIndex;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _currentScreenshotIndex = index;
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: isActive
+                          ? r.value(mobile: 55, desktop: 70)
+                          : r.value(mobile: 45, desktop: 55),
+                      height: isActive
+                          ? r.value(mobile: 45, desktop: 55)
+                          : r.value(mobile: 38, desktop: 45),
+                      margin: EdgeInsets.symmetric(horizontal: r.spacing(6)),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isActive
+                              ? AppTheme.primaryColor
+                              : AppTheme.primaryColor.withValues(alpha: 0.3),
+                          width: isActive ? 2 : 1,
+                        ),
+                        boxShadow: isActive
+                            ? [
+                                BoxShadow(
+                                  color: AppTheme.primaryColor
+                                      .withValues(alpha: 0.3),
+                                  blurRadius: 10,
                                 ),
-                                blurRadius: 10,
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: _buildScreenshotImage(
-                        work.screenshots[index],
-                        isThumbnail: true,
+                              ]
+                            : null,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: _buildScreenshotImage(
+                          work.screenshots[index],
+                          r,
+                          isThumbnail: true,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
           ),
       ],
     );
   }
 
-  Widget _buildScreenshotImage(String assetPath, {bool isThumbnail = false}) {
+  Widget _buildScreenshotImage(String assetPath, Responsive r,
+      {bool isThumbnail = false}) {
     return Image.asset(
       assetPath,
       fit: BoxFit.cover,
@@ -491,14 +507,17 @@ class _BestWorksSectionState extends State<BestWorksSection> {
             children: [
               Icon(
                 Icons.image_outlined,
-                size: isThumbnail ? 20 : 48,
+                size: isThumbnail ? 20 : r.value(mobile: 36, desktop: 48),
                 color: AppTheme.primaryColor.withValues(alpha: 0.5),
               ),
               if (!isThumbnail) ...[
-                const SizedBox(height: 12),
+                SizedBox(height: r.spacing(12)),
                 Text(
                   'Screenshot',
-                  style: TextStyle(color: AppTheme.subtleText, fontSize: 14),
+                  style: TextStyle(
+                    color: AppTheme.subtleText,
+                    fontSize: r.fontSize(14),
+                  ),
                 ),
               ],
             ],
@@ -508,44 +527,52 @@ class _BestWorksSectionState extends State<BestWorksSection> {
     );
   }
 
-  Widget _buildNavArrow({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildNavArrow({
+    required IconData icon,
+    required VoidCallback onTap,
+    required Responsive r,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(r.spacing(8)),
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: Colors.white, size: 24),
+        child: Icon(icon, color: Colors.white, size: r.iconSize),
       ),
     );
   }
 
-  Widget _buildInfoArea(BuildContext context, BestWork work, bool isMobile) {
+  Widget _buildInfoArea(BuildContext context, BestWork work, Responsive r) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Description
         Text(
           work.description,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.7),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                height: 1.7,
+                fontSize: r.fontSize(14),
+              ),
         ),
-        const SizedBox(height: 28),
+        SizedBox(height: r.spacing(28)),
 
         // Tech Stack
         _buildInfoSection(
           context,
           title: 'Tech Stack',
           icon: Icons.code,
+          r: r,
           child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: r.spacing(8),
+            runSpacing: r.spacing(8),
             children: work.techStack.map((tech) {
               return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: r.spacing(14),
+                  vertical: r.spacing(8),
                 ),
                 decoration: BoxDecoration(
                   gradient: AppTheme.primaryGradient,
@@ -553,9 +580,9 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                 ),
                 child: Text(
                   tech,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
+                    fontSize: r.fontSize(11),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -563,22 +590,23 @@ class _BestWorksSectionState extends State<BestWorksSection> {
             }).toList(),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: r.spacing(24)),
 
         // Key Features
         _buildInfoSection(
           context,
           title: 'Key Features',
           icon: Icons.star_outline,
+          r: r,
           child: Column(
             children: work.keyFeatures.map((feature) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.only(bottom: r.spacing(10)),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(top: 6),
+                      margin: EdgeInsets.only(top: r.spacing(6)),
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
@@ -586,13 +614,14 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: r.spacing(12)),
                     Expanded(
                       child: Text(
                         feature,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.copyWith(height: 1.5),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              height: 1.5,
+                              fontSize: r.fontSize(13),
+                            ),
                       ),
                     ),
                   ],
@@ -604,33 +633,35 @@ class _BestWorksSectionState extends State<BestWorksSection> {
 
         // Future Plans (only for In Progress projects)
         if (work.futurePlans.isNotEmpty) ...[
-          const SizedBox(height: 24),
+          SizedBox(height: r.spacing(24)),
           _buildInfoSection(
             context,
             title: 'Roadmap',
             icon: Icons.rocket_launch_outlined,
+            r: r,
             child: Column(
               children: work.futurePlans.map((plan) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: EdgeInsets.only(bottom: r.spacing(10)),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
                         Icons.schedule,
-                        size: 16,
+                        size: r.fontSize(16),
                         color: Colors.amber.withValues(alpha: 0.8),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: r.spacing(12)),
                       Expanded(
                         child: Text(
                           plan,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                height: 1.5,
-                                color: AppTheme.subtleText,
-                                fontStyle: FontStyle.italic,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    height: 1.5,
+                                    color: AppTheme.subtleText,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: r.fontSize(13),
+                                  ),
                         ),
                       ),
                     ],
@@ -649,24 +680,25 @@ class _BestWorksSectionState extends State<BestWorksSection> {
     required String title,
     required IconData icon,
     required Widget child,
+    required Responsive r,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: 18, color: AppTheme.secondaryColor),
-            const SizedBox(width: 8),
+            Icon(icon, size: r.fontSize(18), color: AppTheme.secondaryColor),
+            SizedBox(width: r.spacing(8)),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+                    fontWeight: FontWeight.w600,
+                    fontSize: r.fontSize(16),
+                  ),
             ),
           ],
         ),
-        const SizedBox(height: 14),
+        SizedBox(height: r.spacing(14)),
         child,
       ],
     );

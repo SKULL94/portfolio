@@ -85,26 +85,120 @@ class AppTheme {
   }
 }
 
+/// Responsive utility class using MediaQuery for proper mobile/web scaling
 class Responsive {
-  static bool isMobile(BuildContext context) =>
-      MediaQuery.of(context).size.width < 768;
+  final BuildContext context;
+  late final double width;
+  late final double height;
+  late final double textScale;
 
-  static bool isTablet(BuildContext context) =>
-      MediaQuery.of(context).size.width >= 768 &&
-      MediaQuery.of(context).size.width < 1200;
+  Responsive(this.context) {
+    final mq = MediaQuery.of(context);
+    width = mq.size.width;
+    height = mq.size.height;
+    textScale = mq.textScaler.scale(1.0);
+  }
 
-  static bool isDesktop(BuildContext context) =>
-      MediaQuery.of(context).size.width >= 1200;
+  // Breakpoints
+  bool get isSmallPhone => width < 360;
+  bool get isMobile => width < 768;
+  bool get isTablet => width >= 768 && width < 1200;
+  bool get isDesktop => width >= 1200;
 
-  static double getHorizontalPadding(BuildContext context) {
-    if (isDesktop(context)) return 120;
-    if (isTablet(context)) return 60;
+  // Responsive value helper - returns different values based on screen size
+  T value<T>({
+    required T mobile,
+    T? smallPhone,
+    T? tablet,
+    T? desktop,
+  }) {
+    if (isSmallPhone && smallPhone != null) return smallPhone;
+    if (isDesktop && desktop != null) return desktop;
+    if (isTablet && tablet != null) return tablet;
+    return mobile;
+  }
+
+  // Responsive font size - scales with screen width
+  double fontSize(double baseSize) {
+    if (isSmallPhone) return baseSize * 0.85;
+    if (isMobile) return baseSize * 0.9;
+    if (isTablet) return baseSize * 0.95;
+    return baseSize;
+  }
+
+  // Responsive spacing
+  double spacing(double baseSpacing) {
+    if (isSmallPhone) return baseSpacing * 0.6;
+    if (isMobile) return baseSpacing * 0.75;
+    if (isTablet) return baseSpacing * 0.9;
+    return baseSpacing;
+  }
+
+  // Horizontal padding
+  double get horizontalPadding {
+    if (isDesktop) return 120;
+    if (isTablet) return 60;
+    if (isSmallPhone) return 16;
     return 24;
   }
 
-  static int getGridCrossAxisCount(BuildContext context) {
-    if (isDesktop(context)) return 3;
-    if (isTablet(context)) return 2;
+  // Vertical section padding
+  double get sectionVerticalPadding {
+    if (isDesktop) return 100;
+    if (isTablet) return 80;
+    if (isSmallPhone) return 40;
+    return 60;
+  }
+
+  // Grid cross axis count
+  int get gridCrossAxisCount {
+    if (isDesktop) return 3;
+    if (isTablet) return 2;
     return 1;
+  }
+
+  // Card border radius
+  double get cardRadius {
+    if (isSmallPhone) return 12;
+    if (isMobile) return 16;
+    return 20;
+  }
+
+  // Icon sizes
+  double get iconSize {
+    if (isSmallPhone) return 20;
+    if (isMobile) return 22;
+    return 24;
+  }
+
+  // Button padding
+  EdgeInsets get buttonPadding {
+    if (isSmallPhone) {
+      return const EdgeInsets.symmetric(horizontal: 20, vertical: 12);
+    }
+    if (isMobile) {
+      return const EdgeInsets.symmetric(horizontal: 24, vertical: 14);
+    }
+    return const EdgeInsets.symmetric(horizontal: 32, vertical: 16);
+  }
+
+  // Static methods for backward compatibility
+  static bool isMobileStatic(BuildContext context) =>
+      MediaQuery.of(context).size.width < 768;
+
+  static bool isTabletStatic(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    return w >= 768 && w < 1200;
+  }
+
+  static bool isDesktopStatic(BuildContext context) =>
+      MediaQuery.of(context).size.width >= 1200;
+
+  static double getHorizontalPadding(BuildContext context) {
+    return Responsive(context).horizontalPadding;
+  }
+
+  static int getGridCrossAxisCount(BuildContext context) {
+    return Responsive(context).gridCrossAxisCount;
   }
 }

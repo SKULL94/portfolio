@@ -7,33 +7,37 @@ class ExperienceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final r = Responsive(context);
+
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: Responsive.getHorizontalPadding(context),
-        vertical: 100,
+        horizontal: r.horizontalPadding,
+        vertical: r.sectionVerticalPadding,
       ),
       child: Column(
         children: [
-          _buildSectionTitle(context, 'Work Experience'),
-          const SizedBox(height: 60),
+          _buildSectionTitle(context, 'Work Experience', r),
+          SizedBox(height: r.spacing(60)),
           ...experiences.asMap().entries.map(
-                (entry) => _buildExperienceCard(context, entry.value, entry.key),
+                (entry) => _buildExperienceCard(context, entry.value, entry.key, r),
               ),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
+  Widget _buildSectionTitle(BuildContext context, String title, Responsive r) {
     return Column(
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.displayMedium,
+          style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                fontSize: r.fontSize(40),
+              ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: r.spacing(16)),
         Container(
-          width: 80,
+          width: r.value(mobile: 60, desktop: 80),
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
@@ -45,21 +49,19 @@ class ExperienceSection extends StatelessWidget {
   }
 
   Widget _buildExperienceCard(
-      BuildContext context, Experience experience, int index) {
-    final isMobile = Responsive.isMobile(context);
-
+      BuildContext context, Experience experience, int index, Responsive r) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 40),
+      margin: EdgeInsets.only(bottom: r.spacing(40)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isMobile) ...[
+          if (!r.isMobile) ...[
             // Timeline
             Column(
               children: [
                 Container(
-                  width: 20,
-                  height: 20,
+                  width: r.value(mobile: 16, desktop: 20),
+                  height: r.value(mobile: 16, desktop: 20),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: AppTheme.primaryGradient,
@@ -74,7 +76,7 @@ class ExperienceSection extends StatelessWidget {
                 if (index < experiences.length - 1)
                   Container(
                     width: 2,
-                    height: 300,
+                    height: r.value(mobile: 200, tablet: 250, desktop: 300),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -88,34 +90,31 @@ class ExperienceSection extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(width: 30),
+            SizedBox(width: r.spacing(30)),
           ],
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(28),
+              padding: EdgeInsets.all(r.spacing(24)),
               decoration: BoxDecoration(
                 color: AppTheme.cardBg,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(r.cardRadius),
                 border: Border.all(
                   color: AppTheme.primaryColor.withValues(alpha: 0.2),
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
+                    blurRadius: r.value(mobile: 12, desktop: 20),
+                    offset: Offset(0, r.value(mobile: 6, desktop: 10)),
                   ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
+                  // Header - responsive layout
+                  r.isMobile
+                      ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -125,42 +124,56 @@ class ExperienceSection extends StatelessWidget {
                                   .headlineMedium
                                   ?.copyWith(
                                     color: AppTheme.primaryColor,
+                                    fontSize: r.fontSize(22),
                                   ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: r.spacing(4)),
                             Text(
                               experience.role,
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(fontSize: r.fontSize(16)),
                             ),
+                            SizedBox(height: r.spacing(12)),
+                            _buildDurationBadge(experience.duration, r),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    experience.company,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(
+                                          color: AppTheme.primaryColor,
+                                          fontSize: r.fontSize(24),
+                                        ),
+                                  ),
+                                  SizedBox(height: r.spacing(4)),
+                                  Text(
+                                    experience.role,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontSize: r.fontSize(18)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            _buildDurationBadge(experience.duration, r),
                           ],
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.secondaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppTheme.secondaryColor.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: Text(
-                          experience.duration,
-                          style: TextStyle(
-                            color: AppTheme.secondaryColor,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: r.spacing(24)),
                   ...experience.projects.map(
-                    (project) => _buildProjectItem(context, project),
+                    (project) => _buildProjectItem(context, project, r),
                   ),
                 ],
               ),
@@ -171,13 +184,38 @@ class ExperienceSection extends StatelessWidget {
     );
   }
 
-  Widget _buildProjectItem(BuildContext context, Project project) {
+  Widget _buildDurationBadge(String duration, Responsive r) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(
+        horizontal: r.spacing(16),
+        vertical: r.spacing(8),
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.secondaryColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Text(
+        duration,
+        style: TextStyle(
+          color: AppTheme.secondaryColor,
+          fontSize: r.fontSize(13),
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProjectItem(
+      BuildContext context, Project project, Responsive r) {
+    return Container(
+      margin: EdgeInsets.only(bottom: r.spacing(20)),
+      padding: EdgeInsets.all(r.spacing(16)),
       decoration: BoxDecoration(
         color: AppTheme.darkBg.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(r.cardRadius * 0.6),
         border: Border.all(
           color: AppTheme.subtleText.withValues(alpha: 0.1),
         ),
@@ -190,47 +228,49 @@ class ExperienceSection extends StatelessWidget {
               Icon(
                 Icons.folder_outlined,
                 color: AppTheme.secondaryColor,
-                size: 20,
+                size: r.iconSize,
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: r.spacing(10)),
               Expanded(
                 child: Text(
                   project.name,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: 16,
+                        fontSize: r.fontSize(15),
                         color: AppTheme.lightText,
                       ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: r.spacing(8)),
           Text(
             project.description,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: r.fontSize(13),
+                ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: r.spacing(12)),
           ...project.highlights.map(
             (highlight) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
+              padding: EdgeInsets.only(bottom: r.spacing(6)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    margin: const EdgeInsets.only(top: 8),
+                    margin: EdgeInsets.only(top: r.spacing(8)),
                     width: 6,
                     height: 6,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: AppTheme.primaryColor,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: r.spacing(10)),
                   Expanded(
                     child: Text(
                       highlight,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontSize: 13,
+                            fontSize: r.fontSize(12),
                           ),
                     ),
                   ),

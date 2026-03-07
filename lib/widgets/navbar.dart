@@ -13,12 +13,12 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
+    final r = Responsive(context);
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: Responsive.getHorizontalPadding(context),
-        vertical: 16,
+        horizontal: r.horizontalPadding,
+        vertical: r.spacing(16),
       ),
       decoration: BoxDecoration(
         color: AppTheme.darkBg.withValues(alpha: 0.95),
@@ -33,42 +33,46 @@ class NavBar extends StatelessWidget {
           ShaderMask(
             shaderCallback: (bounds) =>
                 AppTheme.primaryGradient.createShader(bounds),
-            child: const Text(
+            child: Text(
               'MZH',
               style: TextStyle(
-                fontSize: 28,
+                fontSize: r.fontSize(28),
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
           ),
           // Nav items
-          if (!isMobile)
+          if (!r.isMobile)
             Row(
               children: [
-                _buildNavItem('Home', 'home'),
-                _buildNavItem('About', 'about'),
-                _buildNavItem('Skills', 'skills'),
-                _buildNavItem('Experience', 'experience'),
-                _buildNavItem('Best Works', 'bestworks'),
-                _buildNavItem('Projects', 'projects'),
-                _buildNavItem('Contact', 'contact'),
+                _buildNavItem('Home', 'home', r),
+                _buildNavItem('About', 'about', r),
+                _buildNavItem('Skills', 'skills', r),
+                _buildNavItem('Experience', 'experience', r),
+                _buildNavItem('Best Works', 'bestworks', r),
+                _buildNavItem('Projects', 'projects', r),
+                _buildNavItem('Contact', 'contact', r),
               ],
             )
           else
             IconButton(
-              onPressed: () => _showMobileMenu(context),
-              icon: const Icon(Icons.menu, color: AppTheme.lightText),
+              onPressed: () => _showMobileMenu(context, r),
+              icon: Icon(
+                Icons.menu,
+                color: AppTheme.lightText,
+                size: r.iconSize + 2,
+              ),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem(String label, String section) {
+  Widget _buildNavItem(String label, String section, Responsive r) {
     final isActive = currentSection == section;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: r.spacing(14)),
       child: InkWell(
         onTap: () => onNavTap(section),
         child: Column(
@@ -79,9 +83,10 @@ class NavBar extends StatelessWidget {
               style: TextStyle(
                 color: isActive ? AppTheme.primaryColor : AppTheme.lightText,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                fontSize: r.fontSize(14),
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: r.spacing(4)),
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               height: 2,
@@ -97,25 +102,25 @@ class NavBar extends StatelessWidget {
     );
   }
 
-  void _showMobileMenu(BuildContext context) {
+  void _showMobileMenu(BuildContext context, Responsive r) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.cardBg,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(r.cardRadius)),
       ),
       builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(r.spacing(24)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildMobileNavItem(context, 'Home', 'home'),
-            _buildMobileNavItem(context, 'About', 'about'),
-            _buildMobileNavItem(context, 'Skills', 'skills'),
-            _buildMobileNavItem(context, 'Experience', 'experience'),
-            _buildMobileNavItem(context, 'Best Works', 'bestworks'),
-            _buildMobileNavItem(context, 'Projects', 'projects'),
-            _buildMobileNavItem(context, 'Contact', 'contact'),
+            _buildMobileNavItem(context, 'Home', 'home', r),
+            _buildMobileNavItem(context, 'About', 'about', r),
+            _buildMobileNavItem(context, 'Skills', 'skills', r),
+            _buildMobileNavItem(context, 'Experience', 'experience', r),
+            _buildMobileNavItem(context, 'Best Works', 'bestworks', r),
+            _buildMobileNavItem(context, 'Projects', 'projects', r),
+            _buildMobileNavItem(context, 'Contact', 'contact', r),
           ],
         ),
       ),
@@ -126,6 +131,7 @@ class NavBar extends StatelessWidget {
     BuildContext context,
     String label,
     String section,
+    Responsive r,
   ) {
     final isActive = currentSection == section;
     return ListTile(
@@ -133,19 +139,23 @@ class NavBar extends StatelessWidget {
         Navigator.pop(context);
         onNavTap(section);
       },
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: r.spacing(8),
+        vertical: r.spacing(4),
+      ),
       title: Text(
         label,
         style: TextStyle(
           color: isActive ? AppTheme.primaryColor : AppTheme.lightText,
           fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-          fontSize: 18,
+          fontSize: r.fontSize(16),
         ),
       ),
       trailing: isActive
           ? Icon(
               Icons.arrow_forward_ios,
               color: AppTheme.primaryColor,
-              size: 16,
+              size: r.fontSize(16),
             )
           : null,
     );

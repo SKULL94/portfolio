@@ -9,46 +9,51 @@ class ContactSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
+    final r = Responsive(context);
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: Responsive.getHorizontalPadding(context),
-        vertical: 100,
+        horizontal: r.horizontalPadding,
+        vertical: r.sectionVerticalPadding,
       ),
       child: Column(
         children: [
-          _buildSectionTitle(context, 'Get In Touch'),
-          const SizedBox(height: 20),
+          _buildSectionTitle(context, 'Get In Touch', r),
+          SizedBox(height: r.spacing(20)),
           Text(
             'Have a project in mind? Let\'s work together!',
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontSize: r.fontSize(14),
+                ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 60),
+          SizedBox(height: r.spacing(60)),
           Container(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: isMobile
+            constraints: BoxConstraints(maxWidth: r.value(mobile: 400, desktop: 800)),
+            child: r.isMobile
                 ? Column(
                     children: [
                       _buildContactCard(
                         context,
+                        r: r,
                         icon: Icons.email_outlined,
                         title: 'Email',
                         value: AppConstants.email,
                         onTap: _launchEmail,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: r.spacing(20)),
                       _buildContactCard(
                         context,
+                        r: r,
                         icon: Icons.phone_outlined,
                         title: 'Phone',
                         value: AppConstants.phone,
                         onTap: () => _launchUrl('tel:${AppConstants.phone}'),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: r.spacing(20)),
                       _buildContactCard(
                         context,
+                        r: r,
                         icon: Icons.location_on_outlined,
                         title: 'Location',
                         value: AppConstants.location,
@@ -56,42 +61,47 @@ class ContactSection extends StatelessWidget {
                       ),
                     ],
                   )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _buildContactCard(
-                          context,
-                          icon: Icons.email_outlined,
-                          title: 'Email',
-                          value: AppConstants.email,
-                          onTap: _launchEmail,
+                : IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: _buildContactCard(
+                            context,
+                            r: r,
+                            icon: Icons.email_outlined,
+                            title: 'Email',
+                            value: AppConstants.email,
+                            onTap: _launchEmail,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: _buildContactCard(
-                          context,
-                          icon: Icons.phone_outlined,
-                          title: 'Phone',
-                          value: AppConstants.phone,
-                          onTap: () => _launchUrl('tel:${AppConstants.phone}'),
+                        SizedBox(width: r.spacing(20)),
+                        Expanded(
+                          child: _buildContactCard(
+                            context,
+                            r: r,
+                            icon: Icons.phone_outlined,
+                            title: 'Phone',
+                            value: AppConstants.phone,
+                            onTap: () => _launchUrl('tel:${AppConstants.phone}'),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: _buildContactCard(
-                          context,
-                          icon: Icons.location_on_outlined,
-                          title: 'Location',
-                          value: AppConstants.location,
-                          onTap: null,
+                        SizedBox(width: r.spacing(20)),
+                        Expanded(
+                          child: _buildContactCard(
+                            context,
+                            r: r,
+                            icon: Icons.location_on_outlined,
+                            title: 'Location',
+                            value: AppConstants.location,
+                            onTap: null,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
           ),
-          const SizedBox(height: 60),
+          SizedBox(height: r.spacing(60)),
           // Social links
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -100,29 +110,38 @@ class ContactSection extends StatelessWidget {
                 icon: FontAwesomeIcons.linkedin,
                 url: AppConstants.linkedIn,
                 label: 'LinkedIn',
+                r: r,
               ),
-              const SizedBox(width: 20),
+              SizedBox(width: r.spacing(20)),
               _buildSocialButton(
                 icon: FontAwesomeIcons.github,
                 url: AppConstants.github,
                 label: 'GitHub',
+                r: r,
               ),
             ],
           ),
-          const SizedBox(height: 60),
+          SizedBox(height: r.spacing(60)),
           // CTA Button
-          ElevatedButton(
-            onPressed: _launchEmail,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.send),
-                SizedBox(width: 12),
-                Text('Send Me a Message', style: TextStyle(fontSize: 16)),
-              ],
+          SizedBox(
+            width: r.isMobile ? double.infinity : null,
+            child: ElevatedButton(
+              onPressed: _launchEmail,
+              style: ElevatedButton.styleFrom(
+                padding: r.buttonPadding,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.send, size: r.iconSize),
+                  SizedBox(width: r.spacing(12)),
+                  Text(
+                    'Send Me a Message',
+                    style: TextStyle(fontSize: r.fontSize(14)),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -130,13 +149,19 @@ class ContactSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
+  Widget _buildSectionTitle(
+      BuildContext context, String title, Responsive r) {
     return Column(
       children: [
-        Text(title, style: Theme.of(context).textTheme.displayMedium),
-        const SizedBox(height: 16),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                fontSize: r.fontSize(40),
+              ),
+        ),
+        SizedBox(height: r.spacing(16)),
         Container(
-          width: 80,
+          width: r.value(mobile: 60, desktop: 80),
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
@@ -149,6 +174,7 @@ class ContactSection extends StatelessWidget {
 
   Widget _buildContactCard(
     BuildContext context, {
+    required Responsive r,
     required IconData icon,
     required String title,
     required String value,
@@ -156,20 +182,20 @@ class ContactSection extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(r.cardRadius),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(r.spacing(20)),
         decoration: BoxDecoration(
           color: AppTheme.cardBg,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(r.cardRadius),
           border: Border.all(
             color: AppTheme.primaryColor.withValues(alpha: 0.2),
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+              blurRadius: r.value(mobile: 12, desktop: 20),
+              offset: Offset(0, r.value(mobile: 6, desktop: 10)),
             ),
           ],
         ),
@@ -177,25 +203,30 @@ class ContactSection extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: r.value(mobile: 50, desktop: 60),
+              height: r.value(mobile: 50, desktop: 60),
               decoration: BoxDecoration(
                 gradient: AppTheme.primaryGradient,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(r.cardRadius * 0.7),
               ),
-              child: Icon(icon, color: Colors.white, size: 26),
+              child: Icon(icon, color: Colors.white, size: r.iconSize + 2),
             ),
-            const SizedBox(height: 16),
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 6),
+            SizedBox(height: r.spacing(16)),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: r.fontSize(18),
+                  ),
+            ),
+            SizedBox(height: r.spacing(6)),
             Text(
               value,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: onTap != null
-                    ? AppTheme.secondaryColor
-                    : AppTheme.subtleText,
-                fontSize: 13,
-              ),
+                    color: onTap != null
+                        ? AppTheme.secondaryColor
+                        : AppTheme.subtleText,
+                    fontSize: r.fontSize(12),
+                  ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -210,13 +241,14 @@ class ContactSection extends StatelessWidget {
     required IconData icon,
     required String url,
     required String label,
+    required Responsive r,
   }) {
     return OutlinedButton.icon(
       onPressed: () => _launchUrl(url),
-      icon: FaIcon(icon, size: 18),
-      label: Text(label),
+      icon: FaIcon(icon, size: r.fontSize(18)),
+      label: Text(label, style: TextStyle(fontSize: r.fontSize(14))),
       style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: r.buttonPadding,
       ),
     );
   }
