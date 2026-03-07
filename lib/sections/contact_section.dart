@@ -56,41 +56,39 @@ class ContactSection extends StatelessWidget {
                       ),
                     ],
                   )
-                : IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: _buildContactCard(
-                            context,
-                            icon: Icons.email_outlined,
-                            title: 'Email',
-                            value: AppConstants.email,
-                            onTap: _launchEmail,
-                          ),
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _buildContactCard(
+                          context,
+                          icon: Icons.email_outlined,
+                          title: 'Email',
+                          value: AppConstants.email,
+                          onTap: _launchEmail,
                         ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: _buildContactCard(
-                            context,
-                            icon: Icons.phone_outlined,
-                            title: 'Phone',
-                            value: AppConstants.phone,
-                            onTap: () => _launchUrl('tel:${AppConstants.phone}'),
-                          ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: _buildContactCard(
+                          context,
+                          icon: Icons.phone_outlined,
+                          title: 'Phone',
+                          value: AppConstants.phone,
+                          onTap: () => _launchUrl('tel:${AppConstants.phone}'),
                         ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: _buildContactCard(
-                            context,
-                            icon: Icons.location_on_outlined,
-                            title: 'Location',
-                            value: AppConstants.location,
-                            onTap: null,
-                          ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: _buildContactCard(
+                          context,
+                          icon: Icons.location_on_outlined,
+                          title: 'Location',
+                          value: AppConstants.location,
+                          onTap: null,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
           ),
           const SizedBox(height: 60),
@@ -182,7 +180,7 @@ class ContactSection extends StatelessWidget {
           ],
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 56,
@@ -209,8 +207,11 @@ class ContactSection extends StatelessWidget {
                     color: onTap != null
                         ? AppTheme.secondaryColor
                         : AppTheme.subtleText,
+                    fontSize: 13,
                   ),
               textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
