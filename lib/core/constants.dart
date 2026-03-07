@@ -14,7 +14,7 @@ class AppConstants {
 
 Proven ability to create scalable and user-friendly products, demonstrated by an app with 10K+ downloads and 2500+ Daily Active Users.
 
-Experience in publishing apps on the Play Store and App Store, with 4+ apps successfully published.
+Experience in publishing apps on the Play Store and App Store, with 5+ apps successfully published.
 ''';
 
   static const List<String> animatedTexts = [
@@ -59,8 +59,8 @@ const List<Skill> skills = [
     icon: 'cloud',
   ),
   Skill(
-    category: 'AI Integration',
-    items: ['TensorFlow Lite', 'On-Device AI', 'OpenAI APIs'],
+    category: 'AI Integration Pipeline',
+    items: ['TensorFlow Lite', 'On-Device AI', 'On-Prem AI'],
     icon: 'smart_toy',
   ),
   Skill(
@@ -258,7 +258,7 @@ const List<BestWork> bestWorks = [
     name: 'Sales Calling App',
     tagline: 'AI-Powered Sales Acceleration Platform',
     description:
-        'Enterprise-grade sales calling solution enabling Loan Consultants (LCs) to efficiently manage and convert leads. The app supports both CPaaS integration and direct SIM calling, with real-time audio streaming and intelligent lead management.',
+        'Enterprise-grade sales calling solution enabling Lead Consultants (LCs) to efficiently manage and convert leads. The app supports both CPaaS integration and direct SIM calling, with real-time audio streaming and intelligent lead management.',
     status: 'In Progress',
     screenshots: [
       'assets/best_works/superconnect/super-one.jpg',
@@ -325,7 +325,7 @@ const List<BestWork> bestWorks = [
       'OpenAI Realtime API',
       'ElevenLabs',
       'WebSocket',
-      'BLoC'
+      'BLoC',
     ],
     keyFeatures: [
       'OpenAI Realtime API for instant responses',

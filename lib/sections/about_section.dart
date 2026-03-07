@@ -44,9 +44,9 @@ class AboutSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: r.fontSize(40),
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.displayMedium?.copyWith(fontSize: r.fontSize(40)),
         ),
         SizedBox(height: r.spacing(16)),
         Container(
@@ -106,19 +106,19 @@ class AboutSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Flutter Developer & Mobile App Specialist',
+          'Mobile App & WebApp Specialist',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AppTheme.primaryColor,
-                fontSize: r.fontSize(24),
-              ),
+            color: AppTheme.primaryColor,
+            fontSize: r.fontSize(24),
+          ),
         ),
         SizedBox(height: r.spacing(24)),
         Text(
           AppConstants.aboutMe,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                height: 1.8,
-                fontSize: r.fontSize(15),
-              ),
+            height: 1.8,
+            fontSize: r.fontSize(15),
+          ),
         ),
         SizedBox(height: r.spacing(32)),
         // Grid layout for consistent sizing
@@ -151,11 +151,7 @@ class _StatCard extends StatelessWidget {
   final String label;
   final Responsive r;
 
-  const _StatCard({
-    required this.value,
-    required this.label,
-    required this.r,
-  });
+  const _StatCard({required this.value, required this.label, required this.r});
 
   @override
   Widget build(BuildContext context) {

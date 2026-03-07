@@ -85,12 +85,12 @@ class _HeroSectionState extends State<HeroSection>
                           // Greeting
                           Text(
                             'Hello, I\'m',
-                            style:
-                                Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      color: AppTheme.secondaryColor,
-                                      letterSpacing: 2,
-                                      fontSize: r.fontSize(18),
-                                    ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  color: AppTheme.secondaryColor,
+                                  letterSpacing: 2,
+                                  fontSize: r.fontSize(18),
+                                ),
                           ),
                           SizedBox(height: r.spacing(16)),
 
@@ -100,9 +100,7 @@ class _HeroSectionState extends State<HeroSection>
                                 AppTheme.primaryGradient.createShader(bounds),
                             child: Text(
                               AppConstants.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displayLarge
+                              style: Theme.of(context).textTheme.displayLarge
                                   ?.copyWith(
                                     fontSize: r.value(
                                       mobile: 32,
@@ -119,23 +117,23 @@ class _HeroSectionState extends State<HeroSection>
 
                           // Static role info
                           Text(
-                            'Frontend Mobile Application Developer',
-                            style:
-                                Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      color: AppTheme.lightText,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: r.fontSize(18),
-                                    ),
+                            'Frontend Mobile & Web Application Developer',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  color: AppTheme.lightText,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: r.fontSize(18),
+                                ),
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: r.spacing(8)),
                           Text(
                             'Android | iOS | WebApp',
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: AppTheme.subtleText,
-                                      fontSize: r.fontSize(14),
-                                    ),
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
+                                  color: AppTheme.subtleText,
+                                  fontSize: r.fontSize(14),
+                                ),
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: r.spacing(24)),
@@ -148,9 +146,7 @@ class _HeroSectionState extends State<HeroSection>
                               desktop: 50,
                             ),
                             child: DefaultTextStyle(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium!
+                              style: Theme.of(context).textTheme.headlineMedium!
                                   .copyWith(
                                     color: AppTheme.subtleText,
                                     fontSize: r.fontSize(22),
@@ -161,7 +157,9 @@ class _HeroSectionState extends State<HeroSection>
                                     .map(
                                       (text) => TypewriterAnimatedText(
                                         text,
-                                        speed: const Duration(milliseconds: 100),
+                                        speed: const Duration(
+                                          milliseconds: 100,
+                                        ),
                                       ),
                                     )
                                     .toList(),
@@ -182,11 +180,11 @@ class _HeroSectionState extends State<HeroSection>
                             ),
                             child: Text(
                               AppConstants.subtitle,
-                              style:
-                                  Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                        color: AppTheme.primaryColor,
-                                        fontSize: r.fontSize(14),
-                                      ),
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(
+                                    color: AppTheme.primaryColor,
+                                    fontSize: r.fontSize(14),
+                                  ),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -235,8 +233,9 @@ class _HeroSectionState extends State<HeroSection>
                                     icon: const Icon(Icons.mail_outline),
                                     label: Text(
                                       'Contact Me',
-                                      style:
-                                          TextStyle(fontSize: r.fontSize(14)),
+                                      style: TextStyle(
+                                        fontSize: r.fontSize(14),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -252,8 +251,9 @@ class _HeroSectionState extends State<HeroSection>
                                     icon: const Icon(Icons.work_outline),
                                     label: Text(
                                       'View Personal Projects',
-                                      style:
-                                          TextStyle(fontSize: r.fontSize(14)),
+                                      style: TextStyle(
+                                        fontSize: r.fontSize(14),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -326,7 +326,12 @@ class _HeroSectionState extends State<HeroSection>
     ];
     final baseSizes = [100.0, 150.0, 80.0, 120.0, 200.0];
     // Scale down circles on mobile
-    final scale = r.value(mobile: 0.5, smallPhone: 0.4, tablet: 0.7, desktop: 1.0);
+    final scale = r.value(
+      mobile: 0.5,
+      smallPhone: 0.4,
+      tablet: 0.7,
+      desktop: 1.0,
+    );
     final sizes = baseSizes.map((s) => s * scale).toList();
 
     final colors = [
