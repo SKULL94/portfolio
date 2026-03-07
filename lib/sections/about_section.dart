@@ -89,6 +89,8 @@ class AboutSection extends StatelessWidget {
   }
 
   Widget _buildAboutContent(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -104,29 +106,43 @@ class AboutSection extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.8),
         ),
         const SizedBox(height: 32),
-        Wrap(
-          spacing: 24,
-          runSpacing: 16,
-          children: [
-            _buildStatCard('4+', 'Years Experience'),
-            _buildStatCard('10K+', 'App Downloads'),
-            _buildStatCard('2500+', 'Daily Users'),
-            _buildStatCard('4+', 'Published Apps'),
+        // Grid layout for consistent sizing
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: isMobile ? 2 : 4,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: isMobile ? 1.3 : 1.4,
+          children: const [
+            _StatCard(value: '4+', label: 'Years Experience'),
+            _StatCard(value: '10K+', label: 'App Downloads'),
+            _StatCard(value: '2500+', label: 'Daily Users'),
+            _StatCard(value: '5+', label: 'Published Apps'),
           ],
         ),
       ],
     );
   }
+}
 
-  Widget _buildStatCard(String value, String label) {
+class _StatCard extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _StatCard({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         color: AppTheme.cardBg,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ShaderMask(
             shaderCallback: (bounds) =>
@@ -147,6 +163,7 @@ class AboutSection extends StatelessWidget {
               fontSize: 12,
               color: AppTheme.subtleText.withValues(alpha: 0.8),
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
