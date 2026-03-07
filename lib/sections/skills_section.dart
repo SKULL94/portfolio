@@ -12,9 +12,7 @@ class SkillsSection extends StatelessWidget {
         horizontal: Responsive.getHorizontalPadding(context),
         vertical: 100,
       ),
-      decoration: BoxDecoration(
-        color: AppTheme.cardBg.withValues(alpha: 0.3),
-      ),
+      decoration: BoxDecoration(color: AppTheme.cardBg.withValues(alpha: 0.3)),
       child: Column(
         children: [
           _buildSectionTitle(context, 'Skills & Expertise'),
@@ -22,14 +20,15 @@ class SkillsSection extends StatelessWidget {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: Responsive.getGridCrossAxisCount(context),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 400,
               crossAxisSpacing: 24,
               mainAxisSpacing: 24,
-              childAspectRatio: Responsive.isMobile(context) ? 1.2 : 1.3,
+              mainAxisExtent: 220,
             ),
             itemCount: skills.length,
-            itemBuilder: (context, index) => _buildSkillCard(context, skills[index]),
+            itemBuilder: (context, index) =>
+                _buildSkillCard(context, skills[index]),
           ),
         ],
       ),
@@ -39,10 +38,7 @@ class SkillsSection extends StatelessWidget {
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Column(
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.displayMedium,
-        ),
+        Text(title, style: Theme.of(context).textTheme.displayMedium),
         const SizedBox(height: 16),
         Container(
           width: 80,
@@ -61,9 +57,7 @@ class SkillsSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
@@ -96,22 +90,20 @@ class SkillsSection extends StatelessWidget {
                 Expanded(
                   child: Text(
                     skill.category,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: 16,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(fontSize: 16),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
-            Expanded(
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: skill.items
-                    .map((item) => _buildSkillChip(item))
-                    .toList(),
-              ),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: skill.items
+                  .map((item) => _buildSkillChip(item))
+                  .toList(),
             ),
           ],
         ),
@@ -125,16 +117,11 @@ class SkillsSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.primaryColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
       ),
       child: Text(
         skill,
-        style: const TextStyle(
-          fontSize: 13,
-          color: AppTheme.lightText,
-        ),
+        style: const TextStyle(fontSize: 13, color: AppTheme.lightText),
       ),
     );
   }

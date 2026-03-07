@@ -68,8 +68,10 @@ class _HeroSectionState extends State<HeroSection>
           // Main content
           Center(
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.getHorizontalPadding(context),
+              padding: EdgeInsets.only(
+                left: Responsive.getHorizontalPadding(context),
+                right: Responsive.getHorizontalPadding(context),
+                bottom: isMobile ? 100 : 60,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -242,7 +244,7 @@ class _HeroSectionState extends State<HeroSection>
 
           // Scroll indicator with bounce animation
           Positioned(
-            bottom: 40,
+            bottom: isMobile ? 20 : 40,
             left: 0,
             right: 0,
             child: AnimatedBuilder(
