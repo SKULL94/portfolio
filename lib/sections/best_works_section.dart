@@ -318,16 +318,17 @@ class _BestWorksSectionState extends State<BestWorksSection> {
       BuildContext context, BestWork work, bool isMobile) {
     return Column(
       children: [
-        // Main screenshot display - portrait aspect ratio for mobile screenshots
-        AspectRatio(
-          aspectRatio: isMobile ? 0.55 : 0.6, // Portrait ratio for mobile screenshots
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppTheme.darkBg,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                width: 2,
+        // Main screenshot display - fits image naturally
+        Container(
+          constraints: BoxConstraints(
+            maxHeight: isMobile ? 350 : 450,
+          ),
+          decoration: BoxDecoration(
+            color: AppTheme.darkBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppTheme.primaryColor.withValues(alpha: 0.3),
+              width: 2,
             ),
             boxShadow: [
               BoxShadow(
@@ -340,10 +341,11 @@ class _BestWorksSectionState extends State<BestWorksSection> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(14),
             child: Stack(
-              fit: StackFit.expand,
               children: [
-                // Screenshot image placeholder
-                _buildScreenshotImage(work.screenshots[_currentScreenshotIndex]),
+                // Screenshot image - fits naturally
+                Center(
+                  child: _buildScreenshotImage(work.screenshots[_currentScreenshotIndex]),
+                ),
 
                 // Navigation arrows
                 if (work.screenshots.length > 1)
@@ -410,7 +412,6 @@ class _BestWorksSectionState extends State<BestWorksSection> {
             ),
           ),
         ),
-        ),
 
         const SizedBox(height: 16),
 
@@ -468,7 +469,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
   Widget _buildScreenshotImage(String assetPath, {bool isThumbnail = false}) {
     return Image.asset(
       assetPath,
-      fit: isThumbnail ? BoxFit.cover : BoxFit.contain,
+      fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) => Container(
         color: AppTheme.cardBg,
         child: Center(
