@@ -5,10 +5,41 @@ import 'package:url_launcher/url_launcher.dart';
 import '../core/constants.dart';
 import '../core/theme.dart';
 
-class HeroSection extends StatelessWidget {
+class HeroSection extends StatefulWidget {
   final Function(String)? onScrollToSection;
 
   const HeroSection({super.key, this.onScrollToSection});
+
+  @override
+  State<HeroSection> createState() => _HeroSectionState();
+}
+
+class _HeroSectionState extends State<HeroSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scrollIndicatorController;
+  late Animation<double> _bounceAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollIndicatorController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _bounceAnimation = Tween<double>(begin: 0, end: 12).animate(
+      CurvedAnimation(
+        parent: _scrollIndicatorController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollIndicatorController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -193,12 +224,12 @@ class HeroSection extends StatelessWidget {
                     alignment: WrapAlignment.center,
                     children: [
                       ElevatedButton.icon(
-                        onPressed: () => onScrollToSection?.call('contact'),
+                        onPressed: () => widget.onScrollToSection?.call('contact'),
                         icon: const Icon(Icons.mail_outline),
                         label: const Text('Contact Me'),
                       ),
                       OutlinedButton.icon(
-                        onPressed: () => onScrollToSection?.call('projects'),
+                        onPressed: () => widget.onScrollToSection?.call('projects'),
                         icon: const Icon(Icons.work_outline),
                         label: const Text('View Personal Projects'),
                       ),
@@ -209,12 +240,26 @@ class HeroSection extends StatelessWidget {
             ),
           ),
 
-          // Scroll indicator
+          // Scroll indicator with bounce animation
           Positioned(
             bottom: 40,
             left: 0,
             right: 0,
-            child: Center(child: _buildScrollIndicator()),
+            child: AnimatedBuilder(
+              animation: _bounceAnimation,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(0, _bounceAnimation.value),
+                  child: child,
+                );
+              },
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => widget.onScrollToSection?.call('about'),
+                  child: _buildScrollIndicator(),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -278,6 +323,7 @@ class HeroSection extends StatelessWidget {
 
   Widget _buildScrollIndicator() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Scroll Down',
@@ -288,25 +334,40 @@ class HeroSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Container(
-          width: 30,
-          height: 50,
+          width: 28,
+          height: 44,
           decoration: BoxDecoration(
             border: Border.all(
-              color: AppTheme.subtleText.withValues(alpha: 0.3),
+              color: AppTheme.primaryColor.withValues(alpha: 0.5),
+              width: 2,
             ),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Align(
             alignment: Alignment.topCenter,
             child: Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Container(
-                width: 6,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(3),
-                ),
+              padding: const EdgeInsets.only(top: 6),
+              child: AnimatedBuilder(
+                animation: _scrollIndicatorController,
+                builder: (context, child) {
+                  return Container(
+                    width: 6,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor,
+                      borderRadius: BorderRadius.circular(3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryColor.withValues(
+                            alpha: 0.3 + (_scrollIndicatorController.value * 0.4),
+                          ),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ),

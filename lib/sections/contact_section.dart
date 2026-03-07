@@ -121,10 +121,7 @@ class ContactSection extends StatelessWidget {
               children: const [
                 Icon(Icons.send),
                 SizedBox(width: 12),
-                Text(
-                  'Send Me a Message',
-                  style: TextStyle(fontSize: 16),
-                ),
+                Text('Send Me a Message', style: TextStyle(fontSize: 16)),
               ],
             ),
           ),
@@ -136,10 +133,7 @@ class ContactSection extends StatelessWidget {
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Column(
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.displayMedium,
-        ),
+        Text(title, style: Theme.of(context).textTheme.displayMedium),
         const SizedBox(height: 16),
         Container(
           width: 80,
@@ -164,7 +158,7 @@ class ContactSection extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: AppTheme.cardBg,
           borderRadius: BorderRadius.circular(20),
@@ -183,32 +177,25 @@ class ContactSection extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                 gradient: AppTheme.primaryGradient,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 26,
-              ),
+              child: Icon(icon, color: Colors.white, size: 26),
             ),
             const SizedBox(height: 16),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 6),
             Text(
               value,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: onTap != null
-                        ? AppTheme.secondaryColor
-                        : AppTheme.subtleText,
-                    fontSize: 13,
-                  ),
+                color: onTap != null
+                    ? AppTheme.secondaryColor
+                    : AppTheme.subtleText,
+                fontSize: 13,
+              ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -245,7 +232,9 @@ class ContactSection extends StatelessWidget {
     final gmailUrl = Uri.parse(
       'https://mail.google.com/mail/?view=cm&fs=1&to=${AppConstants.email}&su=Hello%20from%20Portfolio',
     );
-    final mailtoUrl = Uri.parse('mailto:${AppConstants.email}?subject=Hello%20from%20Portfolio');
+    final mailtoUrl = Uri.parse(
+      'mailto:${AppConstants.email}?subject=Hello%20from%20Portfolio',
+    );
 
     // Try Gmail web first, fallback to mailto
     if (await canLaunchUrl(gmailUrl)) {
