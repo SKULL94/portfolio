@@ -292,16 +292,6 @@ class _BestWorksSectionState extends State<BestWorksSection> {
                   ),
                   tooltip: 'View on GitHub',
                 ),
-              if (work.playStoreLink != null)
-                IconButton(
-                  onPressed: () => _launchUrl(work.playStoreLink!),
-                  icon: const FaIcon(
-                    FontAwesomeIcons.googlePlay,
-                    color: AppTheme.lightText,
-                    size: 20,
-                  ),
-                  tooltip: 'View on Play Store',
-                ),
             ],
           ),
           const SizedBox(height: 16),
@@ -476,7 +466,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
   Widget _buildScreenshotImage(String assetPath, {bool isThumbnail = false}) {
     return Image.asset(
       assetPath,
-      fit: BoxFit.cover,
+      fit: isThumbnail ? BoxFit.cover : BoxFit.contain,
       errorBuilder: (context, error, stackTrace) => Container(
         color: AppTheme.cardBg,
         child: Center(

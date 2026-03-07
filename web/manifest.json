@@ -1,11 +1,11 @@
 {
-    "name": "flutter_portfolio",
-    "short_name": "flutter_portfolio",
+    "name": "Md Zeeshan Haider - Portfolio",
+    "short_name": "ZH Portfolio",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0A0E21",
+    "theme_color": "#6C63FF",
+    "description": "Flutter Developer Portfolio - SDE-2 with 4+ years of experience",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
