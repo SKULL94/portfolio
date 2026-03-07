@@ -12,9 +12,7 @@ class Footer extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.cardBg.withValues(alpha: 0.5),
         border: Border(
-          top: BorderSide(
-            color: AppTheme.primaryColor.withValues(alpha: 0.2),
-          ),
+          top: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
         ),
       ),
       child: Column(
@@ -23,7 +21,7 @@ class Footer extends StatelessWidget {
             shaderCallback: (bounds) =>
                 AppTheme.primaryGradient.createShader(bounds),
             child: const Text(
-              'ZH',
+              'MZH',
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -45,8 +43,8 @@ class Footer extends StatelessWidget {
           Text(
             'Built with Flutter',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.subtleText.withValues(alpha: 0.6),
-                ),
+              color: AppTheme.subtleText.withValues(alpha: 0.6),
+            ),
           ),
           const SizedBox(height: 8),
           Row(
@@ -55,8 +53,8 @@ class Footer extends StatelessWidget {
               Text(
                 '\u00A9 ${DateTime.now().year} ${AppConstants.name}. All rights reserved.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.subtleText.withValues(alpha: 0.6),
-                    ),
+                  color: AppTheme.subtleText.withValues(alpha: 0.6),
+                ),
               ),
             ],
           ),

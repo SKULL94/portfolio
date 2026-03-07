@@ -23,10 +23,7 @@ class NavBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.darkBg.withValues(alpha: 0.95),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 10,
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 10),
         ],
       ),
       child: Row(
@@ -37,7 +34,7 @@ class NavBar extends StatelessWidget {
             shaderCallback: (bounds) =>
                 AppTheme.primaryGradient.createShader(bounds),
             child: const Text(
-              'ZH',
+              'MZH',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -125,7 +122,11 @@ class NavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileNavItem(BuildContext context, String label, String section) {
+  Widget _buildMobileNavItem(
+    BuildContext context,
+    String label,
+    String section,
+  ) {
     final isActive = currentSection == section;
     return ListTile(
       onTap: () {
@@ -141,7 +142,11 @@ class NavBar extends StatelessWidget {
         ),
       ),
       trailing: isActive
-          ? Icon(Icons.arrow_forward_ios, color: AppTheme.primaryColor, size: 16)
+          ? Icon(
+              Icons.arrow_forward_ios,
+              color: AppTheme.primaryColor,
+              size: 16,
+            )
           : null,
     );
   }
