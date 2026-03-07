@@ -36,7 +36,7 @@ class ContactSection extends StatelessWidget {
                         icon: Icons.email_outlined,
                         title: 'Email',
                         value: AppConstants.email,
-                        onTap: () => _launchUrl('mailto:${AppConstants.email}'),
+                        onTap: _launchEmail,
                       ),
                       const SizedBox(height: 20),
                       _buildContactCard(
@@ -64,8 +64,7 @@ class ContactSection extends StatelessWidget {
                           icon: Icons.email_outlined,
                           title: 'Email',
                           value: AppConstants.email,
-                          onTap: () =>
-                              _launchUrl('mailto:${AppConstants.email}'),
+                          onTap: _launchEmail,
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -112,7 +111,7 @@ class ContactSection extends StatelessWidget {
           const SizedBox(height: 60),
           // CTA Button
           ElevatedButton(
-            onPressed: () => _launchUrl('mailto:${AppConstants.email}'),
+            onPressed: _launchEmail,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
             ),
@@ -233,7 +232,21 @@ class ContactSection extends StatelessWidget {
   void _launchUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _launchEmail() async {
+    final gmailUrl = Uri.parse(
+      'https://mail.google.com/mail/?view=cm&fs=1&to=${AppConstants.email}&su=Hello%20from%20Portfolio',
+    );
+    final mailtoUrl = Uri.parse('mailto:${AppConstants.email}?subject=Hello%20from%20Portfolio');
+
+    // Try Gmail web first, fallback to mailto
+    if (await canLaunchUrl(gmailUrl)) {
+      await launchUrl(gmailUrl, mode: LaunchMode.externalApplication);
+    } else if (await canLaunchUrl(mailtoUrl)) {
+      await launchUrl(mailtoUrl, mode: LaunchMode.externalApplication);
     }
   }
 }
