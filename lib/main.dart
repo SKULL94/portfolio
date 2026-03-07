@@ -63,7 +63,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
   }
 
   void _onScroll() {
-    final scrollPosition = _scrollController.offset;
     String newSection = 'home';
 
     for (final entry in _sectionKeys.entries) {
