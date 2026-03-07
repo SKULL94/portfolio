@@ -318,15 +318,16 @@ class _BestWorksSectionState extends State<BestWorksSection> {
       BuildContext context, BestWork work, bool isMobile) {
     return Column(
       children: [
-        // Main screenshot display
-        Container(
-          height: isMobile ? 300 : 400,
-          decoration: BoxDecoration(
-            color: AppTheme.darkBg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppTheme.primaryColor.withValues(alpha: 0.3),
-              width: 2,
+        // Main screenshot display - portrait aspect ratio for mobile screenshots
+        AspectRatio(
+          aspectRatio: isMobile ? 0.55 : 0.6, // Portrait ratio for mobile screenshots
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.darkBg,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                width: 2,
             ),
             boxShadow: [
               BoxShadow(
@@ -408,6 +409,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
               ],
             ),
           ),
+        ),
         ),
 
         const SizedBox(height: 16),
