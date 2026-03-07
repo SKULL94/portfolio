@@ -56,38 +56,41 @@ class ContactSection extends StatelessWidget {
                       ),
                     ],
                   )
-                : Row(
-                    children: [
-                      Expanded(
-                        child: _buildContactCard(
-                          context,
-                          icon: Icons.email_outlined,
-                          title: 'Email',
-                          value: AppConstants.email,
-                          onTap: _launchEmail,
+                : IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: _buildContactCard(
+                            context,
+                            icon: Icons.email_outlined,
+                            title: 'Email',
+                            value: AppConstants.email,
+                            onTap: _launchEmail,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: _buildContactCard(
-                          context,
-                          icon: Icons.phone_outlined,
-                          title: 'Phone',
-                          value: AppConstants.phone,
-                          onTap: () => _launchUrl('tel:${AppConstants.phone}'),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: _buildContactCard(
+                            context,
+                            icon: Icons.phone_outlined,
+                            title: 'Phone',
+                            value: AppConstants.phone,
+                            onTap: () => _launchUrl('tel:${AppConstants.phone}'),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: _buildContactCard(
-                          context,
-                          icon: Icons.location_on_outlined,
-                          title: 'Location',
-                          value: AppConstants.location,
-                          onTap: null,
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: _buildContactCard(
+                            context,
+                            icon: Icons.location_on_outlined,
+                            title: 'Location',
+                            value: AppConstants.location,
+                            onTap: null,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
           ),
           const SizedBox(height: 60),
@@ -163,7 +166,7 @@ class ContactSection extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.all(28),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: AppTheme.cardBg,
           borderRadius: BorderRadius.circular(20),
@@ -179,26 +182,27 @@ class ContactSection extends StatelessWidget {
           ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
                 gradient: AppTheme.primaryGradient,
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
                 color: Colors.white,
-                size: 28,
+                size: 26,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               value,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
