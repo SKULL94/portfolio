@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -33,7 +34,7 @@ class ContactSection extends StatelessWidget {
                 r.isMobile
                     ? Column(
                         children: [
-                          _buildContactCard(Icons.email_rounded, 'Email', AppConstants.email, () => _launchEmail(), r),
+                          _buildContactCard(Icons.email_rounded, 'Email', AppConstants.email, () => _launchEmail(context), r),
                           SizedBox(height: r.spacing(12)),
                           _buildContactCard(Icons.phone_rounded, 'Phone', AppConstants.phone, () => _launchUrl('tel:${AppConstants.phone}'), r),
                           SizedBox(height: r.spacing(12)),
@@ -42,7 +43,7 @@ class ContactSection extends StatelessWidget {
                       )
                     : Row(
                         children: [
-                          Expanded(child: _buildContactCard(Icons.email_rounded, 'Email', AppConstants.email, () => _launchEmail(), r)),
+                          Expanded(child: _buildContactCard(Icons.email_rounded, 'Email', AppConstants.email, () => _launchEmail(context), r)),
                           SizedBox(width: r.spacing(16)),
                           Expanded(child: _buildContactCard(Icons.phone_rounded, 'Phone', AppConstants.phone, () => _launchUrl('tel:${AppConstants.phone}'), r)),
                           SizedBox(width: r.spacing(16)),
@@ -68,7 +69,7 @@ class ContactSection extends StatelessWidget {
                 SizedBox(
                   width: r.isMobile ? double.infinity : null,
                   child: InkWell(
-                    onTap: _launchEmail,
+                    onTap: () => _launchEmail(context),
                     borderRadius: BorderRadius.circular(r.cardRadius),
                     child: Container(
                       padding: EdgeInsets.symmetric(
@@ -216,18 +217,26 @@ class ContactSection extends StatelessWidget {
     }
   }
 
-  void _launchEmail() async {
-    final gmailUrl = Uri.parse(
-      'https://mail.google.com/mail/?view=cm&fs=1&to=${AppConstants.email}&su=Hello%20from%20Portfolio',
-    );
-    final mailtoUrl = Uri.parse(
-      'mailto:${AppConstants.email}?subject=Hello%20from%20Portfolio',
-    );
+  void _launchEmail(BuildContext context) async {
+    final subject = Uri.encodeComponent("Hey let's connect for work");
+    final r = Responsive(context);
 
-    if (await canLaunchUrl(gmailUrl)) {
-      await launchUrl(gmailUrl, mode: LaunchMode.externalApplication);
-    } else if (await canLaunchUrl(mailtoUrl)) {
-      await launchUrl(mailtoUrl, mode: LaunchMode.externalApplication);
+    if (r.isMobile) {
+      // Mobile: Use mailto which opens Gmail app with prefilled fields
+      final mailtoUrl = Uri.parse(
+        'mailto:${AppConstants.email}?subject=$subject',
+      );
+      if (await canLaunchUrl(mailtoUrl)) {
+        await launchUrl(mailtoUrl, mode: LaunchMode.externalApplication);
+      }
+    } else {
+      // Desktop: Open Gmail web compose with prefilled fields
+      final gmailUrl = Uri.parse(
+        'https://mail.google.com/mail/?view=cm&fs=1&to=${AppConstants.email}&su=$subject',
+      );
+      if (await canLaunchUrl(gmailUrl)) {
+        await launchUrl(gmailUrl, mode: LaunchMode.externalApplication);
+      }
     }
   }
 }
