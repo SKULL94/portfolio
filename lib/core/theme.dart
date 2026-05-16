@@ -1,20 +1,80 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF6C63FF);
-  static const Color secondaryColor = Color(0xFF00D9FF);
-  static const Color accentColor = Color(0xFFFF6B6B);
-  static const Color darkBg = Color(0xFF0A0E21);
-  static const Color cardBg = Color(0xFF1D1E33);
-  static const Color lightText = Color(0xFFFFFFFF);
-  static const Color subtleText = Color(0xFFB0B0B0);
+  // Modern color palette
+  static const Color primaryColor = Color(0xFF8B5CF6); // Vibrant purple
+  static const Color secondaryColor = Color(0xFF06B6D4); // Cyan
+  static const Color accentColor = Color(0xFFF472B6); // Pink
+  static const Color tertiaryColor = Color(0xFF10B981); // Emerald
+  static const Color darkBg = Color(0xFF09090B); // Near black
+  static const Color cardBg = Color(0xFF18181B); // Dark zinc
+  static const Color surfaceBg = Color(0xFF27272A); // Lighter surface
+  static const Color lightText = Color(0xFFFAFAFA);
+  static const Color subtleText = Color(0xFFA1A1AA);
+  static const Color borderColor = Color(0xFF3F3F46);
 
   static final LinearGradient primaryGradient = LinearGradient(
     colors: [primaryColor, secondaryColor],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  static final LinearGradient accentGradient = LinearGradient(
+    colors: [accentColor, primaryColor],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Glassmorphism decoration
+  static BoxDecoration glassDecoration({
+    double opacity = 0.1,
+    double borderOpacity = 0.2,
+    double radius = 24,
+  }) {
+    return BoxDecoration(
+      color: Colors.white.withValues(alpha: opacity),
+      borderRadius: BorderRadius.circular(radius),
+      border: Border.all(
+        color: Colors.white.withValues(alpha: borderOpacity),
+        width: 1,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.2),
+          blurRadius: 24,
+          offset: const Offset(0, 8),
+        ),
+      ],
+    );
+  }
+
+  // Bento card decoration
+  static BoxDecoration bentoDecoration({
+    Color? color,
+    double radius = 24,
+    bool hasGlow = false,
+    Color? glowColor,
+  }) {
+    return BoxDecoration(
+      color: color ?? cardBg,
+      borderRadius: BorderRadius.circular(radius),
+      border: Border.all(
+        color: borderColor.withValues(alpha: 0.5),
+        width: 1,
+      ),
+      boxShadow: hasGlow
+          ? [
+              BoxShadow(
+                color: (glowColor ?? primaryColor).withValues(alpha: 0.15),
+                blurRadius: 32,
+                offset: const Offset(0, 8),
+              ),
+            ]
+          : null,
+    );
+  }
 
   static ThemeData get darkTheme {
     return ThemeData(

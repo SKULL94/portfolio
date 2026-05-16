@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 
@@ -15,56 +16,62 @@ class NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final r = Responsive(context);
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: r.horizontalPadding,
-        vertical: r.spacing(16),
-      ),
-      decoration: BoxDecoration(
-        color: AppTheme.darkBg.withValues(alpha: 0.95),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 10),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Logo
-          ShaderMask(
-            shaderCallback: (bounds) =>
-                AppTheme.primaryGradient.createShader(bounds),
-            child: Text(
-              'MZH',
-              style: TextStyle(
-                fontSize: r.fontSize(28),
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: r.horizontalPadding,
+            vertical: r.spacing(12),
+          ),
+          decoration: BoxDecoration(
+            color: AppTheme.darkBg.withValues(alpha: 0.8),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.white.withValues(alpha: 0.05),
               ),
             ),
           ),
-          // Nav items
-          if (!r.isMobile)
-            Row(
+          child: SafeArea(
+            bottom: false,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem('Home', 'home', r),
-                _buildNavItem('About', 'about', r),
-                _buildNavItem('Skills', 'skills', r),
-                _buildNavItem('Experience', 'experience', r),
-                _buildNavItem('Best Works', 'bestworks', r),
-                _buildNavItem('Projects', 'projects', r),
-                _buildNavItem('Contact', 'contact', r),
+                // Logo
+                GestureDetector(
+                  onTap: () => onNavTap('home'),
+                  child: ShaderMask(
+                    shaderCallback: (bounds) =>
+                        AppTheme.primaryGradient.createShader(bounds),
+                    child: Text(
+                      'MZH',
+                      style: TextStyle(
+                        fontSize: r.fontSize(24),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                // Nav items
+                if (!r.isMobile)
+                  Row(
+                    children: [
+                      _buildNavItem('Home', 'home', r),
+                      _buildNavItem('About', 'about', r),
+                      _buildNavItem('Skills', 'skills', r),
+                      _buildNavItem('Experience', 'experience', r),
+                      _buildNavItem('Works', 'bestworks', r),
+                      _buildNavItem('Projects', 'projects', r),
+                      _buildNavItem('Contact', 'contact', r),
+                    ],
+                  )
+                else
+                  _buildMobileMenuButton(context, r),
               ],
-            )
-          else
-            IconButton(
-              onPressed: () => _showMobileMenu(context, r),
-              icon: Icon(
-                Icons.menu,
-                color: AppTheme.lightText,
-                size: r.iconSize + 2,
-              ),
             ),
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -72,31 +79,43 @@ class NavBar extends StatelessWidget {
   Widget _buildNavItem(String label, String section, Responsive r) {
     final isActive = currentSection == section;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: r.spacing(14)),
+      padding: EdgeInsets.symmetric(horizontal: r.spacing(10)),
       child: InkWell(
         onTap: () => onNavTap(section),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                color: isActive ? AppTheme.primaryColor : AppTheme.lightText,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                fontSize: r.fontSize(14),
-              ),
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: r.spacing(8),
+            vertical: r.spacing(6),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isActive ? AppTheme.primaryColor : AppTheme.subtleText,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+              fontSize: r.fontSize(13),
             ),
-            SizedBox(height: r.spacing(4)),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              height: 2,
-              width: isActive ? 20 : 0,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor,
-                borderRadius: BorderRadius.circular(1),
-              ),
-            ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileMenuButton(BuildContext context, Responsive r) {
+    return InkWell(
+      onTap: () => _showMobileMenu(context, r),
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: EdgeInsets.all(r.spacing(8)),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: Icon(
+          Icons.menu_rounded,
+          color: AppTheme.lightText,
+          size: r.fontSize(22),
         ),
       ),
     );
@@ -105,23 +124,47 @@ class NavBar extends StatelessWidget {
   void _showMobileMenu(BuildContext context, Responsive r) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.cardBg,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(r.cardRadius)),
-      ),
-      builder: (context) => Container(
-        padding: EdgeInsets.all(r.spacing(24)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildMobileNavItem(context, 'Home', 'home', r),
-            _buildMobileNavItem(context, 'About', 'about', r),
-            _buildMobileNavItem(context, 'Skills', 'skills', r),
-            _buildMobileNavItem(context, 'Experience', 'experience', r),
-            _buildMobileNavItem(context, 'Best Works', 'bestworks', r),
-            _buildMobileNavItem(context, 'Projects', 'projects', r),
-            _buildMobileNavItem(context, 'Contact', 'contact', r),
-          ],
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            padding: EdgeInsets.all(r.spacing(24)),
+            decoration: BoxDecoration(
+              color: AppTheme.cardBg.withValues(alpha: 0.95),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Handle bar
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: EdgeInsets.only(bottom: r.spacing(20)),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  // Menu items
+                  _buildMobileNavItem(context, 'Home', 'home', Icons.home_rounded, r),
+                  _buildMobileNavItem(context, 'About', 'about', Icons.person_rounded, r),
+                  _buildMobileNavItem(context, 'Skills', 'skills', Icons.code_rounded, r),
+                  _buildMobileNavItem(context, 'Experience', 'experience', Icons.work_rounded, r),
+                  _buildMobileNavItem(context, 'Best Works', 'bestworks', Icons.star_rounded, r),
+                  _buildMobileNavItem(context, 'Projects', 'projects', Icons.folder_rounded, r),
+                  _buildMobileNavItem(context, 'Contact', 'contact', Icons.mail_rounded, r),
+                  SizedBox(height: r.spacing(16)),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -131,33 +174,59 @@ class NavBar extends StatelessWidget {
     BuildContext context,
     String label,
     String section,
+    IconData icon,
     Responsive r,
   ) {
     final isActive = currentSection == section;
-    return ListTile(
-      onTap: () {
-        Navigator.pop(context);
-        onNavTap(section);
-      },
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: r.spacing(8),
-        vertical: r.spacing(4),
-      ),
-      title: Text(
-        label,
-        style: TextStyle(
-          color: isActive ? AppTheme.primaryColor : AppTheme.lightText,
-          fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-          fontSize: r.fontSize(16),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: r.spacing(4)),
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(context);
+          onNavTap(section);
+        },
+        borderRadius: BorderRadius.circular(r.cardRadius),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: r.spacing(16),
+            vertical: r.spacing(14),
+          ),
+          decoration: BoxDecoration(
+            color: isActive
+                ? AppTheme.primaryColor.withValues(alpha: 0.15)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(r.cardRadius),
+            border: isActive
+                ? Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3))
+                : null,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: isActive ? AppTheme.primaryColor : AppTheme.subtleText,
+                size: r.fontSize(20),
+              ),
+              SizedBox(width: r.spacing(14)),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isActive ? AppTheme.primaryColor : AppTheme.lightText,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                  fontSize: r.fontSize(15),
+                ),
+              ),
+              const Spacer(),
+              if (isActive)
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppTheme.primaryColor,
+                  size: r.fontSize(14),
+                ),
+            ],
+          ),
         ),
       ),
-      trailing: isActive
-          ? Icon(
-              Icons.arrow_forward_ios,
-              color: AppTheme.primaryColor,
-              size: r.fontSize(16),
-            )
-          : null,
     );
   }
 }

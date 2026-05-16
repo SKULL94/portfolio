@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../core/constants.dart';
 import '../core/theme.dart';
@@ -10,119 +11,133 @@ class SkillsSection extends StatelessWidget {
     final r = Responsive(context);
 
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: r.horizontalPadding,
         vertical: r.sectionVerticalPadding,
       ),
-      decoration: BoxDecoration(color: AppTheme.cardBg.withValues(alpha: 0.3)),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg.withValues(alpha: 0.3),
+      ),
       child: Column(
         children: [
-          _buildSectionTitle(context, 'Skills & Expertise', r),
-          SizedBox(height: r.spacing(60)),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: r.gridCrossAxisCount,
-              crossAxisSpacing: r.spacing(24),
-              mainAxisSpacing: r.spacing(24),
-              mainAxisExtent: r.value(
-                mobile: 180,
-                smallPhone: 170,
-                tablet: 190,
-                desktop: 200,
-              ),
-            ),
-            itemCount: skills.length,
-            itemBuilder: (context, index) =>
-                _buildSkillCard(context, skills[index], r),
-          ),
+          _buildSectionHeader(r),
+          SizedBox(height: r.spacing(50)),
+          _buildSkillsGrid(r),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, Responsive r) {
+  Widget _buildSectionHeader(Responsive r) {
     return Column(
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: r.fontSize(40),
-              ),
-          textAlign: TextAlign.center,
+        ShaderMask(
+          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+          child: Text(
+            'Skills & Expertise',
+            style: TextStyle(
+              fontSize: r.fontSize(32),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
-        SizedBox(height: r.spacing(16)),
+        SizedBox(height: r.spacing(12)),
         Container(
-          width: r.value(mobile: 60, desktop: 80),
+          width: 60,
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
+        SizedBox(height: r.spacing(16)),
+        Text(
+          'Technologies I work with',
+          style: TextStyle(
+            color: AppTheme.subtleText,
+            fontSize: r.fontSize(14),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildSkillCard(BuildContext context, Skill skill, Responsive r) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.cardBg,
-        borderRadius: BorderRadius.circular(r.cardRadius),
-        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: r.value(mobile: 12, desktop: 20),
-            offset: Offset(0, r.value(mobile: 6, desktop: 10)),
-          ),
-        ],
+  Widget _buildSkillsGrid(Responsive r) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 1200),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: r.gridCrossAxisCount,
+          crossAxisSpacing: r.spacing(16),
+          mainAxisSpacing: r.spacing(16),
+          mainAxisExtent: r.value(mobile: 160.0, tablet: 170.0, desktop: 180.0),
+        ),
+        itemCount: skills.length,
+        itemBuilder: (context, index) => _buildSkillCard(skills[index], r),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(r.spacing(20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: r.value(mobile: 40, desktop: 46),
-                  height: r.value(mobile: 40, desktop: 46),
-                  decoration: BoxDecoration(
-                    gradient: AppTheme.primaryGradient,
-                    borderRadius: BorderRadius.circular(r.cardRadius * 0.6),
+    );
+  }
+
+  Widget _buildSkillCard(Skill skill, Responsive r) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(r.cardRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: EdgeInsets.all(r.spacing(20)),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(r.cardRadius),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with icon and title
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(r.spacing(10)),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      _getIconForSkill(skill.icon),
+                      color: Colors.white,
+                      size: r.fontSize(18),
+                    ),
                   ),
-                  child: Icon(
-                    _getIconForSkill(skill.icon),
-                    color: Colors.white,
-                    size: r.iconSize,
+                  SizedBox(width: r.spacing(12)),
+                  Expanded(
+                    child: Text(
+                      skill.category,
+                      style: TextStyle(
+                        color: AppTheme.lightText,
+                        fontSize: r.fontSize(14),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-                SizedBox(width: r.spacing(16)),
-                Expanded(
-                  child: Text(
-                    skill.category,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: r.fontSize(15),
-                        ),
+                ],
+              ),
+              SizedBox(height: r.spacing(16)),
+              // Skill chips
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Wrap(
+                    spacing: r.spacing(6),
+                    runSpacing: r.spacing(6),
+                    children: skill.items.map((item) => _buildSkillChip(item, r)).toList(),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: r.spacing(16)),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Wrap(
-                  spacing: r.spacing(8),
-                  runSpacing: r.spacing(8),
-                  children: skill.items
-                      .map((item) => _buildSkillChip(item, r))
-                      .toList(),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -131,19 +146,20 @@ class SkillsSection extends StatelessWidget {
   Widget _buildSkillChip(String skill, Responsive r) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: r.spacing(12),
-        vertical: r.spacing(6),
+        horizontal: r.spacing(10),
+        vertical: r.spacing(5),
       ),
       decoration: BoxDecoration(
         color: AppTheme.primaryColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
       ),
       child: Text(
         skill,
         style: TextStyle(
-          fontSize: r.fontSize(12),
+          fontSize: r.fontSize(10),
           color: AppTheme.lightText,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
@@ -152,19 +168,19 @@ class SkillsSection extends StatelessWidget {
   IconData _getIconForSkill(String iconName) {
     switch (iconName) {
       case 'code':
-        return Icons.code;
+        return Icons.code_rounded;
       case 'layers':
-        return Icons.layers;
+        return Icons.layers_rounded;
       case 'architecture':
-        return Icons.architecture;
+        return Icons.architecture_rounded;
       case 'cloud':
-        return Icons.cloud;
+        return Icons.cloud_rounded;
       case 'smart_toy':
-        return Icons.smart_toy;
+        return Icons.smart_toy_rounded;
       case 'build':
-        return Icons.build;
+        return Icons.build_rounded;
       default:
-        return Icons.star;
+        return Icons.star_rounded;
     }
   }
 }

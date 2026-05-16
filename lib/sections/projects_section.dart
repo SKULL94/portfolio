@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,187 +13,189 @@ class ProjectsSection extends StatelessWidget {
     final r = Responsive(context);
 
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: r.horizontalPadding,
         vertical: r.sectionVerticalPadding,
       ),
-      decoration: BoxDecoration(
-        color: AppTheme.cardBg.withValues(alpha: 0.3),
-      ),
       child: Column(
         children: [
-          _buildSectionTitle(context, 'Personal Projects', r),
-          SizedBox(height: r.spacing(20)),
-          Text(
-            'Side projects I\'ve built to explore new technologies',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontSize: r.fontSize(14),
-                ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: r.spacing(60)),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: r.isMobile ? 1 : 2,
-              crossAxisSpacing: r.spacing(24),
-              mainAxisSpacing: r.spacing(24),
-              mainAxisExtent: r.value(
-                mobile: 320,
-                smallPhone: 300,
-                tablet: 340,
-                desktop: 360,
+          _buildSectionHeader(r),
+          SizedBox(height: r.spacing(50)),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1000),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: r.isMobile ? 1 : 2,
+                crossAxisSpacing: r.spacing(20),
+                mainAxisSpacing: r.spacing(20),
+                mainAxisExtent: r.value(mobile: 280.0, tablet: 300.0, desktop: 320.0),
               ),
+              itemCount: personalProjects.length,
+              itemBuilder: (context, index) => _buildProjectCard(personalProjects[index], r),
             ),
-            itemCount: personalProjects.length,
-            itemBuilder: (context, index) =>
-                _buildProjectCard(context, personalProjects[index], r),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(
-      BuildContext context, String title, Responsive r) {
+  Widget _buildSectionHeader(Responsive r) {
     return Column(
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: r.fontSize(40),
-              ),
+        ShaderMask(
+          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+          child: Text(
+            'Personal Projects',
+            style: TextStyle(
+              fontSize: r.fontSize(32),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
-        SizedBox(height: r.spacing(16)),
+        SizedBox(height: r.spacing(12)),
         Container(
-          width: r.value(mobile: 60, desktop: 80),
+          width: 60,
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
+        SizedBox(height: r.spacing(16)),
+        Text(
+          'Side projects exploring new technologies',
+          style: TextStyle(
+            color: AppTheme.subtleText,
+            fontSize: r.fontSize(14),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildProjectCard(
-      BuildContext context, Project project, Responsive r) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.cardBg,
-        borderRadius: BorderRadius.circular(r.cardRadius),
-        border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.2),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: r.value(mobile: 12, desktop: 20),
-            offset: Offset(0, r.value(mobile: 6, desktop: 10)),
+  Widget _buildProjectCard(Project project, Responsive r) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(r.cardRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: EdgeInsets.all(r.spacing(20)),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(r.cardRadius),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(r.spacing(24)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: r.value(mobile: 50, desktop: 60),
-                  height: r.value(mobile: 50, desktop: 60),
-                  decoration: BoxDecoration(
-                    gradient: AppTheme.primaryGradient,
-                    borderRadius: BorderRadius.circular(r.cardRadius * 0.75),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(r.spacing(12)),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.rocket_launch_rounded,
+                      color: Colors.white,
+                      size: r.fontSize(20),
+                    ),
                   ),
-                  child: Icon(
-                    Icons.rocket_launch,
-                    color: Colors.white,
-                    size: r.iconSize + 4,
+                  Row(
+                    children: [
+                      if (project.githubLink != null)
+                        _buildIconButton(FontAwesomeIcons.github, project.githubLink!, r),
+                      if (project.playStoreLink != null) ...[
+                        SizedBox(width: r.spacing(8)),
+                        _buildIconButton(FontAwesomeIcons.googlePlay, project.playStoreLink!, r),
+                      ],
+                    ],
                   ),
-                ),
-                Row(
-                  children: [
-                    if (project.githubLink != null)
-                      IconButton(
-                        onPressed: () => _launchUrl(project.githubLink!),
-                        icon: FaIcon(
-                          FontAwesomeIcons.github,
-                          color: AppTheme.lightText,
-                          size: r.iconSize,
-                        ),
-                        tooltip: 'View on GitHub',
-                      ),
-                    if (project.playStoreLink != null)
-                      IconButton(
-                        onPressed: () => _launchUrl(project.playStoreLink!),
-                        icon: FaIcon(
-                          FontAwesomeIcons.googlePlay,
-                          color: AppTheme.lightText,
-                          size: r.iconSize,
-                        ),
-                        tooltip: 'View on Play Store',
-                      ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: r.spacing(20)),
-            Text(
-              project.name,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontSize: r.fontSize(22),
-                  ),
-            ),
-            SizedBox(height: r.spacing(8)),
-            Text(
-              project.description,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontSize: r.fontSize(13),
-                  ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: r.spacing(16)),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: project.highlights.take(4).map(
-                    (highlight) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: r.spacing(8)),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              size: r.fontSize(16),
-                              color: AppTheme.secondaryColor,
-                            ),
-                            SizedBox(width: r.spacing(10)),
-                            Expanded(
-                              child: Text(
-                                highlight,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(fontSize: r.fontSize(12)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ).toList(),
+                ],
+              ),
+              SizedBox(height: r.spacing(16)),
+
+              // Title
+              Text(
+                project.name,
+                style: TextStyle(
+                  color: AppTheme.lightText,
+                  fontSize: r.fontSize(18),
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: r.spacing(6)),
+
+              // Description
+              Text(
+                project.description,
+                style: TextStyle(
+                  color: AppTheme.subtleText,
+                  fontSize: r.fontSize(12),
+                  height: 1.4,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: r.spacing(14)),
+
+              // Highlights
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: project.highlights.take(4).map((highlight) => Padding(
+                      padding: EdgeInsets.only(bottom: r.spacing(6)),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.check_circle_rounded,
+                            size: r.fontSize(14),
+                            color: AppTheme.secondaryColor,
+                          ),
+                          SizedBox(width: r.spacing(8)),
+                          Expanded(
+                            child: Text(
+                              highlight,
+                              style: TextStyle(
+                                color: AppTheme.subtleText,
+                                fontSize: r.fontSize(11),
+                                height: 1.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, String url, Responsive r) {
+    return InkWell(
+      onTap: () => _launchUrl(url),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: EdgeInsets.all(r.spacing(8)),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: FaIcon(icon, color: AppTheme.lightText, size: r.fontSize(16)),
       ),
     );
   }

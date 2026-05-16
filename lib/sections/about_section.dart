@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../core/constants.dart';
 import '../core/theme.dart';
@@ -10,47 +11,41 @@ class AboutSection extends StatelessWidget {
     final r = Responsive(context);
 
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: r.horizontalPadding,
         vertical: r.sectionVerticalPadding,
       ),
       child: Column(
         children: [
-          _buildSectionTitle(context, 'About Me', r),
-          SizedBox(height: r.spacing(60)),
+          _buildSectionHeader(context, r),
+          SizedBox(height: r.spacing(50)),
           r.isMobile
-              ? Column(
-                  children: [
-                    _buildProfileImage(r),
-                    SizedBox(height: r.spacing(40)),
-                    _buildAboutContent(context, r),
-                  ],
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(flex: 2, child: _buildProfileImage(r)),
-                    SizedBox(width: r.spacing(60)),
-                    Expanded(flex: 3, child: _buildAboutContent(context, r)),
-                  ],
-                ),
+              ? _buildMobileLayout(r, context)
+              : _buildDesktopLayout(r, context),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, Responsive r) {
+  Widget _buildSectionHeader(BuildContext context, Responsive r) {
     return Column(
       children: [
-        Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.displayMedium?.copyWith(fontSize: r.fontSize(40)),
+        ShaderMask(
+          shaderCallback: (bounds) =>
+              AppTheme.primaryGradient.createShader(bounds),
+          child: Text(
+            'About Me',
+            style: TextStyle(
+              fontSize: r.fontSize(32),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
-        SizedBox(height: r.spacing(16)),
+        SizedBox(height: r.spacing(12)),
         Container(
-          width: r.value(mobile: 60, desktop: 80),
+          width: 60,
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
@@ -61,138 +56,158 @@ class AboutSection extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileImage(Responsive r) {
-    // Responsive max width based on screen size
-    final maxWidth = r.value(
-      mobile: r.width * 0.65,
-      smallPhone: r.width * 0.6,
-      tablet: 300.0,
-      desktop: 350.0,
-    );
+  Widget _buildMobileLayout(Responsive r, BuildContext context) {
+    return Column(
+      children: [
+        // Profile image card
+        _buildGlassCard(r, child: Column(children: [_buildProfileImage(r)])),
 
-    return Container(
-      constraints: BoxConstraints(maxWidth: maxWidth),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(r.cardRadius),
-            gradient: AppTheme.primaryGradient,
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                blurRadius: r.value(mobile: 20, desktop: 30),
-                offset: Offset(0, r.value(mobile: 10, desktop: 15)),
+        SizedBox(height: r.spacing(12)),
+
+        // Bio card
+        _buildGlassCard(
+          r,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.person_rounded,
+                    color: AppTheme.primaryColor,
+                    size: r.fontSize(18),
+                  ),
+                  SizedBox(width: r.spacing(8)),
+                  Text(
+                    'Who am I?',
+                    style: TextStyle(
+                      color: AppTheme.lightText,
+                      fontSize: r.fontSize(16),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: r.spacing(14)),
+              Text(
+                AppConstants.aboutMe,
+                style: TextStyle(
+                  color: AppTheme.subtleText,
+                  fontSize: r.fontSize(13),
+                  height: 1.7,
+                ),
               ),
             ],
           ),
-          padding: const EdgeInsets.all(4),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(r.cardRadius - 2),
-            child: Image.asset(
-              'assets/profilepic.JPG',
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAboutContent(BuildContext context, Responsive r) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Mobile App & WebApp Specialist',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AppTheme.primaryColor,
-            fontSize: r.fontSize(24),
-          ),
-        ),
-        SizedBox(height: r.spacing(24)),
-        Text(
-          AppConstants.aboutMe,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            height: 1.8,
-            fontSize: r.fontSize(15),
-          ),
-        ),
-        SizedBox(height: r.spacing(32)),
-        // Grid layout for consistent sizing
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: r.isMobile ? 2 : 4,
-          crossAxisSpacing: r.spacing(16),
-          mainAxisSpacing: r.spacing(16),
-          childAspectRatio: r.value(
-            mobile: 1.3,
-            smallPhone: 1.4,
-            tablet: 1.2,
-            desktop: 1.2,
-          ),
-          children: [
-            _StatCard(value: '4+', label: 'Years Experience', r: r),
-            _StatCard(value: '10K+', label: 'App Downloads', r: r),
-            _StatCard(value: '2500+', label: 'Daily Users', r: r),
-            _StatCard(value: '5+', label: 'Published Apps', r: r),
-          ],
         ),
       ],
     );
   }
-}
 
-class _StatCard extends StatelessWidget {
-  final String value;
-  final String label;
-  final Responsive r;
+  Widget _buildDesktopLayout(Responsive r, BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 1100),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Left column - Profile image
+          _buildProfileImage(r),
 
-  const _StatCard({required this.value, required this.label, required this.r});
+          SizedBox(width: r.spacing(32)),
 
-  @override
-  Widget build(BuildContext context) {
+          // Right column - Bio card
+          Expanded(
+            child: _buildGlassCard(
+              r,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.person_rounded,
+                        color: AppTheme.primaryColor,
+                        size: r.fontSize(20),
+                      ),
+                      SizedBox(width: r.spacing(10)),
+                      Text(
+                        'Who am I?',
+                        style: TextStyle(
+                          color: AppTheme.lightText,
+                          fontSize: r.fontSize(18),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: r.spacing(16)),
+                  Text(
+                    AppConstants.aboutMe,
+                    style: TextStyle(
+                      color: AppTheme.subtleText,
+                      fontSize: r.fontSize(14),
+                      height: 1.8,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGlassCard(Responsive r, {required Widget child}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(r.cardRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(r.spacing(24)),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(r.cardRadius),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileImage(Responsive r) {
+    final size = r.value(mobile: 200.0, desktop: 320.0);
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: r.spacing(12),
-        vertical: r.spacing(12),
-      ),
+      width: size,
+      height: size,
       decoration: BoxDecoration(
-        color: AppTheme.cardBg,
-        borderRadius: BorderRadius.circular(r.cardRadius * 0.6),
-        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(r.cardRadius),
+        gradient: AppTheme.primaryGradient,
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ShaderMask(
-              shaderCallback: (bounds) =>
-                  AppTheme.primaryGradient.createShader(bounds),
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontSize: r.fontSize(26),
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+      padding: const EdgeInsets.all(3),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(r.cardRadius - 2),
+        child: Image.asset(
+          'assets/profilepic.JPG',
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Container(
+            color: AppTheme.cardBg,
+            child: Icon(
+              Icons.person_rounded,
+              size: size * 0.5,
+              color: AppTheme.subtleText,
             ),
-            SizedBox(height: r.spacing(4)),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: r.fontSize(11),
-                color: AppTheme.subtleText.withValues(alpha: 0.8),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
       ),
     );

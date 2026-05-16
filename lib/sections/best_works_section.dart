@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,58 +21,62 @@ class _BestWorksSectionState extends State<BestWorksSection> {
     final r = Responsive(context);
 
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: r.horizontalPadding,
         vertical: r.sectionVerticalPadding,
       ),
-      decoration: const BoxDecoration(color: AppTheme.darkBg),
+      decoration: BoxDecoration(color: AppTheme.cardBg.withValues(alpha: 0.3)),
       child: Column(
         children: [
-          _buildSectionTitle(context, r),
-          SizedBox(height: r.spacing(20)),
-          Text(
-            'Featured projects showcasing end-to-end development expertise',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontSize: r.fontSize(14),
-                ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: r.spacing(60)),
-
-          // Work Selector Tabs
-          _buildWorkSelector(context, r),
+          _buildSectionHeader(r),
           SizedBox(height: r.spacing(40)),
-
-          // Selected Work Detail Card
-          _buildWorkDetailCard(context, bestWorks[_selectedWorkIndex], r),
+          _buildWorkSelector(r),
+          SizedBox(height: r.spacing(30)),
+          _buildWorkDetailCard(bestWorks[_selectedWorkIndex], r),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, Responsive r) {
+  Widget _buildSectionHeader(Responsive r) {
     return Column(
       children: [
-        Text(
-          'Best Works',
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: r.fontSize(40),
-              ),
+        ShaderMask(
+          shaderCallback: (bounds) =>
+              AppTheme.primaryGradient.createShader(bounds),
+          child: Text(
+            'Some of the Best Works',
+            style: TextStyle(
+              fontSize: r.fontSize(32),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
-        SizedBox(height: r.spacing(16)),
+        SizedBox(height: r.spacing(12)),
         Container(
-          width: r.value(mobile: 60, desktop: 80),
+          width: 60,
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
+        SizedBox(height: r.spacing(16)),
+        Text(
+          'Featured projects showcasing my expertise',
+          style: TextStyle(
+            color: AppTheme.subtleText,
+            fontSize: r.fontSize(14),
+          ),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
 
-  Widget _buildWorkSelector(BuildContext context, Responsive r) {
+  Widget _buildWorkSelector(Responsive r) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -81,7 +86,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
           final isSelected = _selectedWorkIndex == index;
 
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: r.spacing(8)),
+            padding: EdgeInsets.symmetric(horizontal: r.spacing(6)),
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -92,55 +97,42 @@ class _BestWorksSectionState extends State<BestWorksSection> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 padding: EdgeInsets.symmetric(
-                  horizontal: r.spacing(20),
-                  vertical: r.spacing(12),
+                  horizontal: r.spacing(16),
+                  vertical: r.spacing(10),
                 ),
                 decoration: BoxDecoration(
                   gradient: isSelected ? AppTheme.primaryGradient : null,
-                  color: isSelected ? null : AppTheme.cardBg,
-                  borderRadius: BorderRadius.circular(30),
+                  color: isSelected
+                      ? null
+                      : Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(24),
                   border: Border.all(
                     color: isSelected
                         ? Colors.transparent
-                        : AppTheme.primaryColor.withValues(alpha: 0.3),
-                    width: 1,
+                        : Colors.white.withValues(alpha: 0.1),
                   ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 5),
-                          ),
-                        ]
-                      : null,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (work.status == 'In Progress')
                       Container(
-                        width: 8,
-                        height: 8,
-                        margin: EdgeInsets.only(right: r.spacing(8)),
+                        width: 6,
+                        height: 6,
+                        margin: EdgeInsets.only(right: r.spacing(6)),
                         decoration: BoxDecoration(
                           color: Colors.greenAccent,
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.greenAccent.withValues(alpha: 0.5),
-                              blurRadius: 6,
-                            ),
-                          ],
                         ),
                       ),
                     Text(
                       work.name,
                       style: TextStyle(
                         color: isSelected ? Colors.white : AppTheme.subtleText,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w500,
-                        fontSize: r.fontSize(14),
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        fontSize: r.fontSize(12),
                       ),
                     ),
                   ],
@@ -153,522 +145,517 @@ class _BestWorksSectionState extends State<BestWorksSection> {
     );
   }
 
-  Widget _buildWorkDetailCard(
-      BuildContext context, BestWork work, Responsive r) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.cardBg,
-        borderRadius: BorderRadius.circular(r.cardRadius + 4),
-        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: r.value(mobile: 20, desktop: 30),
-            offset: Offset(0, r.value(mobile: 10, desktop: 15)),
+  Widget _buildWorkDetailCard(BestWork work, Responsive r) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(r.cardRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(r.cardRadius),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Header with status badge
-          _buildCardHeader(context, work, r),
-
-          // Main content - Screenshots & Info
-          Padding(
-            padding: EdgeInsets.all(r.spacing(28)),
-            child: r.isMobile
-                ? Column(
-                    children: [
-                      _buildScreenshotArea(context, work, r),
-                      SizedBox(height: r.spacing(32)),
-                      _buildInfoArea(context, work, r),
-                    ],
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: r.isTablet ? 5 : 4,
-                        child: _buildScreenshotArea(context, work, r),
+          child: Column(
+            children: [
+              _buildCardHeader(work, r),
+              Padding(
+                padding: EdgeInsets.all(r.spacing(24)),
+                child: r.isMobile
+                    ? Column(
+                        children: [
+                          _buildScreenshotArea(work, r),
+                          SizedBox(height: r.spacing(24)),
+                          _buildInfoArea(work, r),
+                        ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: _buildScreenshotArea(work, r),
+                          ),
+                          SizedBox(width: r.spacing(30)),
+                          Expanded(flex: 6, child: _buildInfoArea(work, r)),
+                        ],
                       ),
-                      SizedBox(width: r.spacing(40)),
-                      Expanded(
-                        flex: r.isTablet ? 5 : 6,
-                        child: _buildInfoArea(context, work, r),
-                      ),
-                    ],
-                  ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildCardHeader(BuildContext context, BestWork work, Responsive r) {
+  Widget _buildCardHeader(BestWork work, Responsive r) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(r.spacing(24)),
+      padding: EdgeInsets.all(r.spacing(20)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             AppTheme.primaryColor.withValues(alpha: 0.15),
             AppTheme.secondaryColor.withValues(alpha: 0.05),
           ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(r.cardRadius + 4),
-          topRight: Radius.circular(r.cardRadius + 4),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(r.cardRadius)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Badges
           Wrap(
-            spacing: r.spacing(12),
+            alignment: WrapAlignment.center,
+            spacing: r.spacing(8),
             runSpacing: r.spacing(8),
-            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              // Category badge
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: r.spacing(14),
-                  vertical: r.spacing(6),
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  work.category,
-                  style: TextStyle(
-                    color: AppTheme.secondaryColor,
-                    fontSize: r.fontSize(12),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+              _buildBadge(work.category, AppTheme.secondaryColor, r),
+              _buildBadge(
+                work.status,
+                work.status == 'In Progress'
+                    ? Colors.greenAccent
+                    : AppTheme.secondaryColor,
+                r,
+                showDot: work.status == 'In Progress',
               ),
-              // Status badge
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: r.spacing(14),
-                  vertical: r.spacing(6),
-                ),
-                decoration: BoxDecoration(
-                  color: work.status == 'In Progress'
-                      ? Colors.green.withValues(alpha: 0.2)
-                      : AppTheme.secondaryColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (work.status == 'In Progress')
-                      Container(
-                        width: 6,
-                        height: 6,
-                        margin: EdgeInsets.only(right: r.spacing(6)),
-                        decoration: const BoxDecoration(
-                          color: Colors.greenAccent,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    Text(
-                      work.status,
-                      style: TextStyle(
-                        color: work.status == 'In Progress'
-                            ? Colors.greenAccent
-                            : AppTheme.secondaryColor,
-                        fontSize: r.fontSize(12),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // GitHub link
-              if (work.githubLink != null && !r.isMobile)
-                IconButton(
-                  onPressed: () => _launchUrl(work.githubLink!),
-                  icon: FaIcon(
-                    FontAwesomeIcons.github,
-                    color: AppTheme.lightText,
-                    size: r.iconSize,
-                  ),
-                  tooltip: 'View on GitHub',
-                ),
             ],
           ),
-          SizedBox(height: r.spacing(16)),
+          SizedBox(height: r.spacing(14)),
           Text(
             work.name,
-            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: r.fontSize(28),
-                ),
+            style: TextStyle(
+              color: AppTheme.lightText,
+              fontSize: r.fontSize(22),
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
           ),
-          SizedBox(height: r.spacing(6)),
+          SizedBox(height: r.spacing(4)),
           Text(
             work.tagline,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppTheme.secondaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: r.fontSize(16),
-                ),
+            style: TextStyle(
+              color: AppTheme.secondaryColor,
+              fontSize: r.fontSize(13),
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildScreenshotArea(
-      BuildContext context, BestWork work, Responsive r) {
+  Widget _buildBadge(
+    String text,
+    Color color,
+    Responsive r, {
+    bool showDot = false,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: r.spacing(10),
+        vertical: r.spacing(5),
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showDot)
+            Container(
+              width: 5,
+              height: 5,
+              margin: EdgeInsets.only(right: r.spacing(5)),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+          Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: r.fontSize(10),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScreenshotArea(BestWork work, Responsive r) {
     return Column(
       children: [
-        Container(
-          constraints: BoxConstraints(
-            maxHeight: r.value(
-              mobile: r.height * 0.4,
-              smallPhone: r.height * 0.35,
-              tablet: 400,
-              desktop: 450,
-            ),
-          ),
-          decoration: BoxDecoration(
-            color: AppTheme.darkBg,
-            borderRadius: BorderRadius.circular(r.cardRadius),
-            border: Border.all(
-              color: AppTheme.primaryColor.withValues(alpha: 0.3),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(r.cardRadius - 2),
-            child: Stack(
-              children: [
-                Center(
-                  child: _buildScreenshotImage(
-                    work.screenshots[_currentScreenshotIndex],
-                    r,
-                  ),
+        // Image with arrows outside
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Left arrow
+            if (work.screenshots.length > 1)
+              _buildNavArrow(Icons.chevron_left, -1, work, r)
+            else
+              SizedBox(width: r.spacing(40)),
+
+            SizedBox(width: r.spacing(12)),
+
+            // Main image
+            Flexible(
+              child: GestureDetector(
+                onTap: () => _showFullScreenImage(
+                  work.screenshots[_currentScreenshotIndex],
+                  r,
                 ),
-
-                if (work.screenshots.length > 1)
-                  Positioned(
-                    left: 8,
-                    top: 0,
-                    bottom: 0,
-                    child: Center(
-                      child: _buildNavArrow(
-                        icon: Icons.chevron_left,
-                        r: r,
-                        onTap: () {
-                          setState(() {
-                            _currentScreenshotIndex = (_currentScreenshotIndex -
-                                    1 +
-                                    work.screenshots.length) %
-                                work.screenshots.length;
-                          });
-                        },
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: r.value(mobile: 350.0, desktop: 420.0),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(r.cardRadius - 4),
+                      border: Border.all(
+                        color: AppTheme.primaryColor.withValues(alpha: 0.2),
                       ),
                     ),
-                  ),
-                if (work.screenshots.length > 1)
-                  Positioned(
-                    right: 8,
-                    top: 0,
-                    bottom: 0,
-                    child: Center(
-                      child: _buildNavArrow(
-                        icon: Icons.chevron_right,
-                        r: r,
-                        onTap: () {
-                          setState(() {
-                            _currentScreenshotIndex = (_currentScreenshotIndex +
-                                    1) %
-                                work.screenshots.length;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                // Counter
-                Positioned(
-                  bottom: 12,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: r.spacing(12),
-                        vertical: r.spacing(6),
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.7),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${_currentScreenshotIndex + 1} / ${work.screenshots.length}',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: r.fontSize(12),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        SizedBox(height: r.spacing(16)),
-
-        // Thumbnails
-        if (work.screenshots.length > 1)
-          SizedBox(
-            height: r.value(mobile: 50, desktop: 60),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(work.screenshots.length, (index) {
-                  final isActive = index == _currentScreenshotIndex;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _currentScreenshotIndex = index;
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: isActive
-                          ? r.value(mobile: 55, desktop: 70)
-                          : r.value(mobile: 45, desktop: 55),
-                      height: isActive
-                          ? r.value(mobile: 45, desktop: 55)
-                          : r.value(mobile: 38, desktop: 45),
-                      margin: EdgeInsets.symmetric(horizontal: r.spacing(6)),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isActive
-                              ? AppTheme.primaryColor
-                              : AppTheme.primaryColor.withValues(alpha: 0.3),
-                          width: isActive ? 2 : 1,
-                        ),
-                        boxShadow: isActive
-                            ? [
-                                BoxShadow(
-                                  color: AppTheme.primaryColor
-                                      .withValues(alpha: 0.3),
-                                  blurRadius: 10,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(r.cardRadius - 5),
+                      child: Stack(
+                        children: [
+                          Image.asset(
+                            work.screenshots[_currentScreenshotIndex],
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) => SizedBox(
+                              height: 200,
+                              child: Center(
+                                child: Icon(
+                                  Icons.image_outlined,
+                                  size: r.fontSize(40),
+                                  color: AppTheme.subtleText,
                                 ),
-                              ]
-                            : null,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: _buildScreenshotImage(
-                          work.screenshots[index],
-                          r,
-                          isThumbnail: true,
-                        ),
+                              ),
+                            ),
+                          ),
+                          // Counter badge
+                          Positioned(
+                            bottom: 8,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: r.spacing(10),
+                                  vertical: r.spacing(4),
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.6),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.zoom_in,
+                                      color: Colors.white,
+                                      size: r.fontSize(12),
+                                    ),
+                                    SizedBox(width: r.spacing(4)),
+                                    Text(
+                                      '${_currentScreenshotIndex + 1}/${work.screenshots.length}',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: r.fontSize(10),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                }),
+                  ),
+                ),
               ),
             ),
+
+            SizedBox(width: r.spacing(12)),
+
+            // Right arrow
+            if (work.screenshots.length > 1)
+              _buildNavArrow(Icons.chevron_right, 1, work, r)
+            else
+              SizedBox(width: r.spacing(40)),
+          ],
+        ),
+        // Thumbnail strip
+        if (work.screenshots.length > 1) ...[
+          SizedBox(height: r.spacing(12)),
+          SizedBox(
+            height: r.value(mobile: 50.0, desktop: 60.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(work.screenshots.length, (index) {
+                final isActive = index == _currentScreenshotIndex;
+                return GestureDetector(
+                  onTap: () => setState(() => _currentScreenshotIndex = index),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: isActive
+                        ? r.value(mobile: 50.0, desktop: 60.0)
+                        : r.value(mobile: 40.0, desktop: 50.0),
+                    height: isActive
+                        ? r.value(mobile: 45.0, desktop: 55.0)
+                        : r.value(mobile: 38.0, desktop: 45.0),
+                    margin: EdgeInsets.symmetric(horizontal: r.spacing(4)),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isActive
+                            ? AppTheme.primaryColor
+                            : Colors.white.withValues(alpha: 0.2),
+                        width: isActive ? 2 : 1,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.asset(
+                        work.screenshots[index],
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            Container(color: AppTheme.cardBg),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
           ),
+        ],
       ],
     );
   }
 
-  Widget _buildScreenshotImage(String assetPath, Responsive r,
-      {bool isThumbnail = false}) {
-    return Image.asset(
-      assetPath,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => Container(
-        color: AppTheme.cardBg,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.image_outlined,
-                size: isThumbnail ? 20 : r.value(mobile: 36, desktop: 48),
-                color: AppTheme.primaryColor.withValues(alpha: 0.5),
-              ),
-              if (!isThumbnail) ...[
-                SizedBox(height: r.spacing(12)),
-                Text(
-                  'Screenshot',
-                  style: TextStyle(
-                    color: AppTheme.subtleText,
-                    fontSize: r.fontSize(14),
+  void _showFullScreenImage(String imagePath, Responsive r) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.9),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.all(r.spacing(16)),
+        child: Stack(
+          children: [
+            // Zoomable image
+            InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(r.cardRadius),
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: AppTheme.cardBg,
+                      child: Icon(
+                        Icons.image_outlined,
+                        color: AppTheme.subtleText,
+                        size: 60,
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ],
-          ),
+              ),
+            ),
+            // Close button
+            Positioned(
+              top: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  padding: EdgeInsets.all(r.spacing(12)),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.7),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: r.fontSize(24),
+                  ),
+                ),
+              ),
+            ),
+            // Hint text
+            Positioned(
+              bottom: r.spacing(20),
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: r.spacing(16),
+                    vertical: r.spacing(8),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Pinch to zoom',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: r.fontSize(12),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildNavArrow({
-    required IconData icon,
-    required VoidCallback onTap,
-    required Responsive r,
-  }) {
+  Widget _buildNavArrow(
+    IconData icon,
+    int direction,
+    BestWork work,
+    Responsive r,
+  ) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        setState(() {
+          _currentScreenshotIndex =
+              (_currentScreenshotIndex + direction + work.screenshots.length) %
+              work.screenshots.length;
+        });
+      },
       child: Container(
-        padding: EdgeInsets.all(r.spacing(8)),
+        padding: EdgeInsets.all(r.spacing(6)),
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: Colors.white, size: r.iconSize),
+        child: Icon(icon, color: Colors.white, size: r.fontSize(18)),
       ),
     );
   }
 
-  Widget _buildInfoArea(BuildContext context, BestWork work, Responsive r) {
+  Widget _buildInfoArea(BestWork work, Responsive r) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        // Description
+        // Description with better spacing
         Text(
           work.description,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                height: 1.7,
-                fontSize: r.fontSize(14),
-              ),
+          style: TextStyle(
+            color: AppTheme.subtleText,
+            fontSize: r.fontSize(13),
+            height: 1.7,
+          ),
         ),
         SizedBox(height: r.spacing(28)),
 
         // Tech Stack
         _buildInfoSection(
-          context,
-          title: 'Tech Stack',
-          icon: Icons.code,
-          r: r,
+          'Tech Stack',
+          Icons.code_rounded,
+          r,
           child: Wrap(
             spacing: r.spacing(8),
             runSpacing: r.spacing(8),
-            children: work.techStack.map((tech) {
-              return Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: r.spacing(14),
-                  vertical: r.spacing(8),
-                ),
-                decoration: BoxDecoration(
-                  gradient: AppTheme.primaryGradient,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  tech,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: r.fontSize(11),
-                    fontWeight: FontWeight.w600,
+            children: work.techStack
+                .map(
+                  (tech) => Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: r.spacing(12),
+                      vertical: r.spacing(6),
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      tech,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: r.fontSize(11),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
+                )
+                .toList(),
           ),
         ),
-        SizedBox(height: r.spacing(24)),
+        SizedBox(height: r.spacing(28)),
 
         // Key Features
         _buildInfoSection(
-          context,
-          title: 'Key Features',
-          icon: Icons.star_outline,
-          r: r,
+          'Key Features',
+          Icons.star_rounded,
+          r,
           child: Column(
-            children: work.keyFeatures.map((feature) {
-              return Padding(
-                padding: EdgeInsets.only(bottom: r.spacing(10)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: r.spacing(6)),
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    SizedBox(width: r.spacing(12)),
-                    Expanded(
-                      child: Text(
-                        feature,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              height: 1.5,
-                              fontSize: r.fontSize(13),
+            children: work.keyFeatures
+                .map(
+                  (feature) => Padding(
+                    padding: EdgeInsets.only(bottom: r.spacing(10)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: r.spacing(5)),
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.primaryGradient,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        SizedBox(width: r.spacing(8)),
+                        Expanded(
+                          child: Text(
+                            feature,
+                            style: TextStyle(
+                              color: AppTheme.subtleText,
+                              fontSize: r.fontSize(11),
+                              height: 1.4,
                             ),
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  ),
+                )
+                .toList(),
           ),
         ),
 
-        // Future Plans (only for In Progress projects)
-        if (work.futurePlans.isNotEmpty) ...[
-          SizedBox(height: r.spacing(24)),
-          _buildInfoSection(
-            context,
-            title: 'Roadmap',
-            icon: Icons.rocket_launch_outlined,
-            r: r,
-            child: Column(
-              children: work.futurePlans.map((plan) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: r.spacing(10)),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.schedule,
-                        size: r.fontSize(16),
-                        color: Colors.amber.withValues(alpha: 0.8),
-                      ),
-                      SizedBox(width: r.spacing(12)),
-                      Expanded(
-                        child: Text(
-                          plan,
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    height: 1.5,
-                                    color: AppTheme.subtleText,
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: r.fontSize(13),
-                                  ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
+        // Links
+        if (work.githubLink != null || work.playStoreLink != null) ...[
+          SizedBox(height: r.spacing(28)),
+          Row(
+            children: [
+              if (work.githubLink != null)
+                _buildLinkButton(
+                  FontAwesomeIcons.github,
+                  'GitHub',
+                  work.githubLink!,
+                  r,
+                ),
+              if (work.githubLink != null && work.playStoreLink != null)
+                SizedBox(width: r.spacing(12)),
+              if (work.playStoreLink != null)
+                _buildLinkButton(
+                  FontAwesomeIcons.googlePlay,
+                  'Play Store',
+                  work.playStoreLink!,
+                  r,
+                ),
+            ],
           ),
         ],
       ],
@@ -676,31 +663,68 @@ class _BestWorksSectionState extends State<BestWorksSection> {
   }
 
   Widget _buildInfoSection(
-    BuildContext context, {
-    required String title,
-    required IconData icon,
+    String title,
+    IconData icon,
+    Responsive r, {
     required Widget child,
-    required Responsive r,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: r.fontSize(18), color: AppTheme.secondaryColor),
-            SizedBox(width: r.spacing(8)),
+            Icon(icon, size: r.fontSize(14), color: AppTheme.secondaryColor),
+            SizedBox(width: r.spacing(6)),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: r.fontSize(16),
-                  ),
+              style: TextStyle(
+                color: AppTheme.lightText,
+                fontSize: r.fontSize(13),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
-        SizedBox(height: r.spacing(14)),
+        SizedBox(height: r.spacing(10)),
         child,
       ],
+    );
+  }
+
+  Widget _buildLinkButton(
+    IconData icon,
+    String label,
+    String url,
+    Responsive r,
+  ) {
+    return InkWell(
+      onTap: () => _launchUrl(url),
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: r.spacing(12),
+          vertical: r.spacing(8),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(icon, color: AppTheme.lightText, size: r.fontSize(14)),
+            SizedBox(width: r.spacing(8)),
+            Text(
+              label,
+              style: TextStyle(
+                color: AppTheme.lightText,
+                fontSize: r.fontSize(11),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

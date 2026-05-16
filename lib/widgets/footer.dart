@@ -16,55 +16,64 @@ class Footer extends StatelessWidget {
         horizontal: r.horizontalPadding,
       ),
       decoration: BoxDecoration(
-        color: AppTheme.cardBg.withValues(alpha: 0.5),
+        color: AppTheme.darkBg,
         border: Border(
-          top: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
         ),
       ),
       child: Column(
         children: [
           ShaderMask(
-            shaderCallback: (bounds) =>
-                AppTheme.primaryGradient.createShader(bounds),
+            shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
             child: Text(
               'MZH',
               style: TextStyle(
-                fontSize: r.fontSize(28),
+                fontSize: r.fontSize(24),
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
           ),
-          SizedBox(height: r.spacing(16)),
+          SizedBox(height: r.spacing(14)),
           Text(
             AppConstants.name,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: r.fontSize(18),
-                ),
+            style: TextStyle(
+              color: AppTheme.lightText,
+              fontSize: r.fontSize(16),
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          SizedBox(height: r.spacing(8)),
+          SizedBox(height: r.spacing(6)),
           Text(
             '${AppConstants.title} | ${AppConstants.subtitle}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: r.fontSize(13),
-                ),
+            style: TextStyle(
+              color: AppTheme.subtleText,
+              fontSize: r.fontSize(12),
+            ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: r.spacing(24)),
-          Text(
-            'Built with Flutter',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          SizedBox(height: r.spacing(20)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.flutter_dash, color: AppTheme.secondaryColor, size: r.fontSize(16)),
+              SizedBox(width: r.spacing(6)),
+              Text(
+                'Built with Flutter',
+                style: TextStyle(
                   color: AppTheme.subtleText.withValues(alpha: 0.6),
-                  fontSize: r.fontSize(12),
+                  fontSize: r.fontSize(11),
                 ),
+              ),
+            ],
           ),
           SizedBox(height: r.spacing(8)),
           Text(
             '\u00A9 ${DateTime.now().year} ${AppConstants.name}. All rights reserved.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.subtleText.withValues(alpha: 0.6),
-                  fontSize: r.fontSize(11),
-                ),
+            style: TextStyle(
+              color: AppTheme.subtleText.withValues(alpha: 0.5),
+              fontSize: r.fontSize(10),
+            ),
             textAlign: TextAlign.center,
           ),
         ],

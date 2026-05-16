@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,28 +17,25 @@ class HeroSection extends StatefulWidget {
 
 class _HeroSectionState extends State<HeroSection>
     with SingleTickerProviderStateMixin {
-  late AnimationController _scrollIndicatorController;
-  late Animation<double> _bounceAnimation;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
-    _scrollIndicatorController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+    _pulseController = AnimationController(
+      duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
 
-    _bounceAnimation = Tween<double>(begin: 0, end: 12).animate(
-      CurvedAnimation(
-        parent: _scrollIndicatorController,
-        curve: Curves.easeInOut,
-      ),
+    _pulseAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
 
   @override
   void dispose() {
-    _scrollIndicatorController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -46,267 +44,79 @@ class _HeroSectionState extends State<HeroSection>
     final r = Responsive(context);
 
     return Container(
-      height: r.height,
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.darkBg,
-            AppTheme.darkBg.withValues(alpha: 0.95),
-            AppTheme.primaryColor.withValues(alpha: 0.1),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
+      constraints: BoxConstraints(minHeight: r.height),
+      decoration: const BoxDecoration(color: AppTheme.darkBg),
       child: Stack(
         children: [
-          // Animated background circles
-          ...List.generate(5, (index) => _buildFloatingCircle(index, r)),
+          // Background gradient orbs
+          Positioned.fill(child: _buildBackgroundOrbs(r)),
 
-          // Main content - wrapped in SafeArea and scrollable for small screens
+          // Main content
           SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: r.horizontalPadding,
-                        vertical: r.spacing(40),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Greeting
-                          Text(
-                            'Hello, I\'m',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(
-                                  color: AppTheme.secondaryColor,
-                                  letterSpacing: 2,
-                                  fontSize: r.fontSize(18),
-                                ),
-                          ),
-                          SizedBox(height: r.spacing(16)),
+            bottom: false,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: r.horizontalPadding,
+                vertical: r.spacing(20),
+              ),
+              child: Column(
+                children: [
+                  SizedBox(height: r.value(mobile: 40.0, desktop: 60.0)),
+                  r.isMobile ? _buildMobileLayout(r) : _buildDesktopLayout(r),
+                  SizedBox(height: r.spacing(40)),
+                  _buildScrollIndicator(r),
+                  SizedBox(height: r.spacing(30)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                          // Name
-                          ShaderMask(
-                            shaderCallback: (bounds) =>
-                                AppTheme.primaryGradient.createShader(bounds),
-                            child: Text(
-                              AppConstants.name,
-                              style: Theme.of(context).textTheme.displayLarge
-                                  ?.copyWith(
-                                    fontSize: r.value(
-                                      mobile: 32,
-                                      smallPhone: 26,
-                                      tablet: 44,
-                                      desktop: 56,
-                                    ),
-                                    color: Colors.white,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(height: r.spacing(16)),
-
-                          // Static role info
-                          Text(
-                            'Frontend Mobile & Web Application Developer',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(
-                                  color: AppTheme.lightText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: r.fontSize(18),
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: r.spacing(8)),
-                          Text(
-                            'Android | iOS | WebApp',
-                            style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(
-                                  color: AppTheme.subtleText,
-                                  fontSize: r.fontSize(14),
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: r.spacing(24)),
-
-                          // Animated role text
-                          SizedBox(
-                            height: r.value(
-                              mobile: 36,
-                              smallPhone: 30,
-                              desktop: 50,
-                            ),
-                            child: DefaultTextStyle(
-                              style: Theme.of(context).textTheme.headlineMedium!
-                                  .copyWith(
-                                    color: AppTheme.subtleText,
-                                    fontSize: r.fontSize(22),
-                                  ),
-                              child: AnimatedTextKit(
-                                repeatForever: true,
-                                animatedTexts: AppConstants.animatedTexts
-                                    .map(
-                                      (text) => TypewriterAnimatedText(
-                                        text,
-                                        speed: const Duration(
-                                          milliseconds: 100,
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: r.spacing(16)),
-
-                          // Subtitle
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: r.spacing(20),
-                              vertical: r.spacing(10),
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: AppTheme.primaryColor),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Text(
-                              AppConstants.subtitle,
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                    color: AppTheme.primaryColor,
-                                    fontSize: r.fontSize(14),
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(height: r.spacing(40)),
-
-                          // Social links
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildSocialButton(
-                                icon: FontAwesomeIcons.linkedin,
-                                url: AppConstants.linkedIn,
-                                tooltip: 'LinkedIn',
-                                r: r,
-                              ),
-                              SizedBox(width: r.spacing(20)),
-                              _buildSocialButton(
-                                icon: FontAwesomeIcons.github,
-                                url: AppConstants.github,
-                                tooltip: 'GitHub',
-                                r: r,
-                              ),
-                              SizedBox(width: r.spacing(20)),
-                              _buildSocialButton(
-                                icon: FontAwesomeIcons.envelope,
-                                url: 'mailto:${AppConstants.email}',
-                                tooltip: 'Email',
-                                r: r,
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: r.spacing(40)),
-
-                          // CTA buttons - full width on mobile
-                          if (r.isMobile)
-                            Column(
-                              children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton.icon(
-                                    onPressed: () => widget.onScrollToSection
-                                        ?.call('contact'),
-                                    style: ElevatedButton.styleFrom(
-                                      padding: r.buttonPadding,
-                                    ),
-                                    icon: const Icon(Icons.mail_outline),
-                                    label: Text(
-                                      'Contact Me',
-                                      style: TextStyle(
-                                        fontSize: r.fontSize(14),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: r.spacing(16)),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: OutlinedButton.icon(
-                                    onPressed: () => widget.onScrollToSection
-                                        ?.call('projects'),
-                                    style: OutlinedButton.styleFrom(
-                                      padding: r.buttonPadding,
-                                    ),
-                                    icon: const Icon(Icons.work_outline),
-                                    label: Text(
-                                      'View Personal Projects',
-                                      style: TextStyle(
-                                        fontSize: r.fontSize(14),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          else
-                            Wrap(
-                              spacing: 20,
-                              runSpacing: 16,
-                              alignment: WrapAlignment.center,
-                              children: [
-                                ElevatedButton.icon(
-                                  onPressed: () =>
-                                      widget.onScrollToSection?.call('contact'),
-                                  icon: const Icon(Icons.mail_outline),
-                                  label: const Text('Contact Me'),
-                                ),
-                                OutlinedButton.icon(
-                                  onPressed: () => widget.onScrollToSection
-                                      ?.call('projects'),
-                                  icon: const Icon(Icons.work_outline),
-                                  label: const Text('View Personal Projects'),
-                                ),
-                              ],
-                            ),
-                          // Extra space for scroll indicator
-                          SizedBox(height: r.isMobile ? 100 : 80),
-                        ],
-                      ),
+  Widget _buildBackgroundOrbs(Responsive r) {
+    return IgnorePointer(
+      child: Stack(
+        children: [
+          // Top right purple orb
+          Positioned(
+            top: -100,
+            right: -100,
+            child: AnimatedBuilder(
+              animation: _pulseAnimation,
+              builder: (context, child) {
+                return Container(
+                  width: r.value(mobile: 250.0, desktop: 400.0) * _pulseAnimation.value,
+                  height: r.value(mobile: 250.0, desktop: 400.0) * _pulseAnimation.value,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppTheme.primaryColor.withValues(alpha: 0.25),
+                        AppTheme.primaryColor.withValues(alpha: 0.0),
+                      ],
                     ),
                   ),
                 );
               },
             ),
           ),
-
-          // Scroll indicator
+          // Bottom left cyan orb
           Positioned(
-            bottom: r.value(mobile: 16, desktop: 40),
-            left: 0,
-            right: 0,
-            child: AnimatedBuilder(
-              animation: _bounceAnimation,
-              builder: (context, child) {
-                return Transform.translate(
-                  offset: Offset(0, _bounceAnimation.value),
-                  child: child,
-                );
-              },
-              child: Center(
-                child: GestureDetector(
-                  onTap: () => widget.onScrollToSection?.call('about'),
-                  child: _buildScrollIndicator(r),
+            bottom: -80,
+            left: -80,
+            child: Container(
+              width: r.value(mobile: 200.0, desktop: 350.0),
+              height: r.value(mobile: 200.0, desktop: 350.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppTheme.secondaryColor.withValues(alpha: 0.18),
+                    AppTheme.secondaryColor.withValues(alpha: 0.0),
+                  ],
                 ),
               ),
             ),
@@ -316,130 +126,626 @@ class _HeroSectionState extends State<HeroSection>
     );
   }
 
-  Widget _buildFloatingCircle(int index, Responsive r) {
-    final positions = [
-      const Offset(0.1, 0.2),
-      const Offset(0.85, 0.15),
-      const Offset(0.75, 0.7),
-      const Offset(0.15, 0.75),
-      const Offset(0.5, 0.5),
-    ];
-    final baseSizes = [100.0, 150.0, 80.0, 120.0, 200.0];
-    // Scale down circles on mobile
-    final scale = r.value(
-      mobile: 0.5,
-      smallPhone: 0.4,
-      tablet: 0.7,
-      desktop: 1.0,
-    );
-    final sizes = baseSizes.map((s) => s * scale).toList();
+  // MOBILE LAYOUT - Optimized for Instagram/social media viewing
+  Widget _buildMobileLayout(Responsive r) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Main intro card
+        _buildGlassCard(
+          r,
+          padding: r.spacing(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildAvailableBadge(r),
+              SizedBox(height: r.spacing(20)),
+              _buildIntroContent(r),
+            ],
+          ),
+        ),
 
-    final colors = [
-      AppTheme.primaryColor.withValues(alpha: 0.1),
-      AppTheme.secondaryColor.withValues(alpha: 0.08),
-      AppTheme.accentColor.withValues(alpha: 0.1),
-      AppTheme.primaryColor.withValues(alpha: 0.06),
-      AppTheme.secondaryColor.withValues(alpha: 0.05),
-    ];
+        SizedBox(height: r.spacing(16)),
 
-    return Positioned(
-      left: r.width * positions[index].dx,
-      top: r.height * positions[index].dy,
-      child: Container(
-        width: sizes[index],
-        height: sizes[index],
-        decoration: BoxDecoration(shape: BoxShape.circle, color: colors[index]),
-      ),
+        // Stats Grid - 2x2
+        Row(
+          children: [
+            Expanded(child: _buildStatCard('4+', 'Years Exp', r)),
+            SizedBox(width: r.spacing(12)),
+            Expanded(child: _buildStatCard('10K+', 'Downloads', r)),
+          ],
+        ),
+        SizedBox(height: r.spacing(12)),
+        Row(
+          children: [
+            Expanded(child: _buildStatCard('2500+', 'Users', r)),
+            SizedBox(width: r.spacing(12)),
+            Expanded(child: _buildStatCard('5+', 'Apps', r)),
+          ],
+        ),
+
+        SizedBox(height: r.spacing(12)),
+
+        // Social links
+        _buildGlassCard(
+          r,
+          padding: r.spacing(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildSocialIcon(FontAwesomeIcons.linkedin, AppConstants.linkedIn, r),
+              _buildSocialIcon(FontAwesomeIcons.github, AppConstants.github, r),
+              _buildSocialIcon(FontAwesomeIcons.envelope, 'mailto:${AppConstants.email}', r),
+            ],
+          ),
+        ),
+
+        SizedBox(height: r.spacing(12)),
+
+        // CTA Button
+        _buildCtaButton(r),
+      ],
     );
   }
 
-  Widget _buildSocialButton({
-    required IconData icon,
-    required String url,
-    required String tooltip,
-    required Responsive r,
-  }) {
-    final size = r.value(mobile: 44.0, smallPhone: 40.0, desktop: 50.0);
-    final iconSize = r.value(mobile: 18.0, smallPhone: 16.0, desktop: 20.0);
+  // DESKTOP LAYOUT - Clean, no outer card
+  Widget _buildDesktopLayout(Responsive r) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Available badge
+            _buildAvailableBadge(r),
+            SizedBox(height: r.spacing(32)),
 
-    return Tooltip(
-      message: tooltip,
-      child: InkWell(
-        onTap: () => _launchUrl(url),
-        borderRadius: BorderRadius.circular(30),
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: AppTheme.subtleText.withValues(alpha: 0.3),
+            // Name
+            ShaderMask(
+              shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+              child: Text(
+                AppConstants.name,
+                style: TextStyle(
+                  fontSize: r.fontSize(52),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-          child: Center(
-            child: FaIcon(icon, color: AppTheme.lightText, size: iconSize),
-          ),
+            SizedBox(height: r.spacing(16)),
+
+            // Animated title
+            SizedBox(
+              height: 40,
+              child: DefaultTextStyle(
+                style: TextStyle(
+                  color: AppTheme.lightText,
+                  fontSize: r.fontSize(20),
+                  fontWeight: FontWeight.w500,
+                ),
+                child: AnimatedTextKit(
+                  repeatForever: true,
+                  animatedTexts: AppConstants.animatedTexts
+                      .map((text) => TypewriterAnimatedText(
+                            text,
+                            speed: const Duration(milliseconds: 80),
+                          ))
+                      .toList(),
+                ),
+              ),
+            ),
+            SizedBox(height: r.spacing(24)),
+
+            // Description
+            Text(
+              'Crafting beautiful, performant mobile & web experiences with Flutter.',
+              style: TextStyle(
+                color: AppTheme.subtleText,
+                fontSize: r.fontSize(16),
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: r.spacing(36)),
+
+            // Service tags
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildServiceTag(Icons.phone_android_rounded, 'Mobile Apps', 'Android & iOS', r),
+                SizedBox(width: r.spacing(20)),
+                _buildServiceTag(Icons.web_rounded, 'Web Apps', 'Website!', r),
+              ],
+            ),
+            SizedBox(height: r.spacing(40)),
+
+            // Stats strip
+            Container(
+              padding: EdgeInsets.symmetric(vertical: r.spacing(24)),
+              decoration: BoxDecoration(
+                border: Border.symmetric(
+                  horizontal: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(child: _buildStatItem('4+', 'Years Exp', r)),
+                  _buildStatDivider(r),
+                  Expanded(child: _buildStatItem('10K+', 'Downloads', r)),
+                  _buildStatDivider(r),
+                  Expanded(child: _buildStatItem('2500+', 'Users', r)),
+                  _buildStatDivider(r),
+                  Expanded(child: _buildStatItem('5+', 'Apps', r)),
+                ],
+              ),
+            ),
+            SizedBox(height: r.spacing(36)),
+
+            // Social links
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildSocialButton(FontAwesomeIcons.linkedin, AppConstants.linkedIn, 'LinkedIn', r),
+                SizedBox(width: r.spacing(28)),
+                _buildSocialButton(FontAwesomeIcons.github, AppConstants.github, 'GitHub', r),
+                SizedBox(width: r.spacing(28)),
+                _buildSocialButton(FontAwesomeIcons.envelope, 'mailto:${AppConstants.email}', 'Email', r),
+              ],
+            ),
+            SizedBox(height: r.spacing(36)),
+
+            // CTA button
+            _buildCtaButton(r),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildScrollIndicator(Responsive r) {
-    final width = r.value(mobile: 24.0, desktop: 28.0);
-    final height = r.value(mobile: 36.0, desktop: 44.0);
+  // GLASS CARD WRAPPER
+  Widget _buildGlassCard(Responsive r, {required Widget child, double? padding}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(r.cardRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: EdgeInsets.all(padding ?? r.spacing(24)),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(r.cardRadius),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.1),
+            ),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
 
+  // AVAILABLE BADGE
+  Widget _buildAvailableBadge(Responsive r) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: r.spacing(12),
+        vertical: r.spacing(6),
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFF10B981).withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFF10B981).withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.5),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: r.spacing(8)),
+          Text(
+            'Available for work',
+            style: TextStyle(
+              color: const Color(0xFF10B981),
+              fontSize: r.fontSize(11),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // INTRO CONTENT
+  Widget _buildIntroContent(Responsive r) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Hello, I'm",
+          style: TextStyle(
+            color: AppTheme.subtleText,
+            fontSize: r.fontSize(14),
+            letterSpacing: 1,
+          ),
+        ),
+        SizedBox(height: r.spacing(6)),
+        ShaderMask(
+          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+          child: Text(
+            AppConstants.name,
+            style: TextStyle(
+              fontSize: r.value(mobile: 28.0, smallPhone: 24.0, tablet: 38.0, desktop: 46.0),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              height: 1.1,
+            ),
+          ),
+        ),
+        SizedBox(height: r.spacing(12)),
+        SizedBox(
+          height: r.value(mobile: 28.0, desktop: 36.0),
+          child: DefaultTextStyle(
+            style: TextStyle(
+              color: AppTheme.lightText,
+              fontSize: r.fontSize(18),
+              fontWeight: FontWeight.w500,
+            ),
+            child: AnimatedTextKit(
+              repeatForever: true,
+              animatedTexts: AppConstants.animatedTexts
+                  .map((text) => TypewriterAnimatedText(
+                        text,
+                        speed: const Duration(milliseconds: 80),
+                      ))
+                  .toList(),
+            ),
+          ),
+        ),
+        SizedBox(height: r.spacing(16)),
+        Text(
+          'Crafting beautiful, performant mobile & web experiences with Flutter.',
+          style: TextStyle(
+            color: AppTheme.subtleText,
+            fontSize: r.fontSize(13),
+            height: 1.6,
+          ),
+        ),
+        SizedBox(height: r.spacing(20)),
+        // Service tags
+        Wrap(
+          spacing: r.spacing(12),
+          runSpacing: r.spacing(8),
+          children: [
+            _buildServiceTag(Icons.phone_android_rounded, 'Mobile Apps', 'Android & iOS', r),
+            _buildServiceTag(Icons.web_rounded, 'Web Apps', 'Website!', r),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // SERVICE TAG (prominent card style)
+  Widget _buildServiceTag(IconData icon, String label, String subtitle, Responsive r) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: r.spacing(20),
+        vertical: r.spacing(14),
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.primaryColor.withValues(alpha: 0.25),
+            AppTheme.secondaryColor.withValues(alpha: 0.15),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.secondaryColor.withValues(alpha: 0.4),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: EdgeInsets.all(r.spacing(8)),
+            decoration: BoxDecoration(
+              color: AppTheme.secondaryColor.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: AppTheme.secondaryColor, size: r.fontSize(20)),
+          ),
+          SizedBox(width: r.spacing(12)),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: AppTheme.lightText,
+                  fontSize: r.fontSize(14),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: r.spacing(2)),
+              Text(
+                '($subtitle)',
+                style: TextStyle(
+                  color: AppTheme.subtleText,
+                  fontSize: r.fontSize(11),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // STATS STRIP - horizontal row of all stats
+  Widget _buildStatsStrip(Responsive r) {
+    return _buildGlassCard(
+      r,
+      padding: r.spacing(20),
+      child: Row(
+        children: [
+          Expanded(child: _buildStatItem('4+', 'Years Exp', r)),
+          _buildStatDivider(r),
+          Expanded(child: _buildStatItem('10K+', 'Downloads', r)),
+          _buildStatDivider(r),
+          Expanded(child: _buildStatItem('2500+', 'Users', r)),
+          _buildStatDivider(r),
+          Expanded(child: _buildStatItem('5+', 'Apps', r)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatDivider(Responsive r) {
+    return Container(
+      width: 1,
+      height: 40,
+      margin: EdgeInsets.symmetric(horizontal: r.spacing(8)),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            AppTheme.primaryColor.withValues(alpha: 0.3),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String value, String label, Responsive r) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        ShaderMask(
+          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: r.fontSize(26),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        SizedBox(height: r.spacing(4)),
         Text(
-          'Scroll Down',
+          label,
           style: TextStyle(
-            color: AppTheme.subtleText.withValues(alpha: 0.6),
+            color: AppTheme.subtleText,
             fontSize: r.fontSize(12),
           ),
         ),
-        const SizedBox(height: 8),
-        Container(
-          width: width,
-          height: height,
+      ],
+    );
+  }
+
+  // STAT CARD (4+, 10K+, etc.) - for mobile
+  Widget _buildStatCard(String value, String label, Responsive r) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(r.cardRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: EdgeInsets.all(r.spacing(12)),
           decoration: BoxDecoration(
-            border: Border.all(
-              color: AppTheme.primaryColor.withValues(alpha: 0.5),
-              width: 2,
-            ),
-            borderRadius: BorderRadius.circular(14),
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(r.cardRadius),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: AnimatedBuilder(
-                animation: _scrollIndicatorController,
-                builder: (context, child) {
-                  return Container(
-                    width: 6,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryColor.withValues(
-                            alpha:
-                                0.3 + (_scrollIndicatorController.value * 0.4),
-                          ),
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                        ),
-                      ],
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ShaderMask(
+                  shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: r.fontSize(22),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  );
-                },
-              ),
+                  ),
+                ),
+                SizedBox(height: r.spacing(2)),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AppTheme.subtleText,
+                    fontSize: r.fontSize(10),
+                    height: 1.2,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  // SOCIAL ICON (Mobile)
+  Widget _buildSocialIcon(IconData icon, String url, Responsive r) {
+    return InkWell(
+      onTap: () => _launchUrl(url),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: EdgeInsets.all(r.spacing(12)),
+        decoration: BoxDecoration(
+          color: AppTheme.cardBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: FaIcon(icon, color: AppTheme.lightText, size: r.fontSize(18)),
+      ),
+    );
+  }
+
+  // SOCIAL BUTTON (Desktop - with label)
+  Widget _buildSocialButton(IconData icon, String url, String label, Responsive r) {
+    return InkWell(
+      onTap: () => _launchUrl(url),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: r.spacing(12)),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(r.spacing(10)),
+              decoration: BoxDecoration(
+                color: AppTheme.cardBg,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              child: FaIcon(icon, color: AppTheme.lightText, size: r.fontSize(16)),
+            ),
+            SizedBox(width: r.spacing(10)),
+            Text(
+              label,
+              style: TextStyle(color: AppTheme.lightText, fontSize: r.fontSize(13)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // CTA BUTTON
+  Widget _buildCtaButton(Responsive r) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(r.cardRadius),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.onScrollToSection?.call('contact'),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: r.spacing(24),
+              vertical: r.spacing(18),
+            ),
+            decoration: BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+              borderRadius: BorderRadius.circular(r.cardRadius),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.rocket_launch_rounded, color: Colors.white, size: r.fontSize(20)),
+                SizedBox(width: r.spacing(12)),
+                Text(
+                  "Let's Build Something",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: r.fontSize(14),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: r.spacing(8)),
+                Icon(Icons.arrow_forward_rounded, color: Colors.white, size: r.fontSize(18)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // SCROLL INDICATOR
+  Widget _buildScrollIndicator(Responsive r) {
+    return GestureDetector(
+      onTap: () => widget.onScrollToSection?.call('about'),
+      child: Column(
+        children: [
+          Text(
+            'Scroll to explore',
+            style: TextStyle(
+              color: AppTheme.subtleText.withValues(alpha: 0.6),
+              fontSize: r.fontSize(11),
+            ),
+          ),
+          SizedBox(height: r.spacing(8)),
+          AnimatedBuilder(
+            animation: _pulseController,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(0, _pulseAnimation.value * 6),
+                child: child,
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.all(r.spacing(8)),
+              decoration: BoxDecoration(
+                color: AppTheme.cardBg,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              child: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppTheme.primaryColor,
+                size: r.fontSize(18),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

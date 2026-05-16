@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,136 +13,92 @@ class ContactSection extends StatelessWidget {
     final r = Responsive(context);
 
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: r.horizontalPadding,
         vertical: r.sectionVerticalPadding,
       ),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg.withValues(alpha: 0.3),
+      ),
       child: Column(
         children: [
-          _buildSectionTitle(context, 'Get In Touch', r),
-          SizedBox(height: r.spacing(20)),
-          Text(
-            'Have a project in mind? Let\'s work together!',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontSize: r.fontSize(14),
+          _buildSectionHeader(r),
+          SizedBox(height: r.spacing(50)),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: Column(
+              children: [
+                // Contact cards
+                r.isMobile
+                    ? Column(
+                        children: [
+                          _buildContactCard(Icons.email_rounded, 'Email', AppConstants.email, () => _launchEmail(), r),
+                          SizedBox(height: r.spacing(12)),
+                          _buildContactCard(Icons.phone_rounded, 'Phone', AppConstants.phone, () => _launchUrl('tel:${AppConstants.phone}'), r),
+                          SizedBox(height: r.spacing(12)),
+                          _buildContactCard(Icons.location_on_rounded, 'Location', AppConstants.location, null, r),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Expanded(child: _buildContactCard(Icons.email_rounded, 'Email', AppConstants.email, () => _launchEmail(), r)),
+                          SizedBox(width: r.spacing(16)),
+                          Expanded(child: _buildContactCard(Icons.phone_rounded, 'Phone', AppConstants.phone, () => _launchUrl('tel:${AppConstants.phone}'), r)),
+                          SizedBox(width: r.spacing(16)),
+                          Expanded(child: _buildContactCard(Icons.location_on_rounded, 'Location', AppConstants.location, null, r)),
+                        ],
+                      ),
+
+                SizedBox(height: r.spacing(40)),
+
+                // Social links
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildSocialButton(FontAwesomeIcons.linkedin, AppConstants.linkedIn, r),
+                    SizedBox(width: r.spacing(16)),
+                    _buildSocialButton(FontAwesomeIcons.github, AppConstants.github, r),
+                  ],
                 ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: r.spacing(60)),
-          Container(
-            constraints: BoxConstraints(maxWidth: r.value(mobile: 400, desktop: 800)),
-            child: r.isMobile
-                ? Column(
-                    children: [
-                      _buildContactCard(
-                        context,
-                        r: r,
-                        icon: Icons.email_outlined,
-                        title: 'Email',
-                        value: AppConstants.email,
-                        onTap: _launchEmail,
+
+                SizedBox(height: r.spacing(40)),
+
+                // CTA Button
+                SizedBox(
+                  width: r.isMobile ? double.infinity : null,
+                  child: InkWell(
+                    onTap: _launchEmail,
+                    borderRadius: BorderRadius.circular(r.cardRadius),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: r.spacing(32),
+                        vertical: r.spacing(16),
                       ),
-                      SizedBox(height: r.spacing(20)),
-                      _buildContactCard(
-                        context,
-                        r: r,
-                        icon: Icons.phone_outlined,
-                        title: 'Phone',
-                        value: AppConstants.phone,
-                        onTap: () => _launchUrl('tel:${AppConstants.phone}'),
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.primaryGradient,
+                        borderRadius: BorderRadius.circular(r.cardRadius),
                       ),
-                      SizedBox(height: r.spacing(20)),
-                      _buildContactCard(
-                        context,
-                        r: r,
-                        icon: Icons.location_on_outlined,
-                        title: 'Location',
-                        value: AppConstants.location,
-                        onTap: null,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.send_rounded, color: Colors.white, size: r.fontSize(18)),
+                          SizedBox(width: r.spacing(12)),
+                          Text(
+                            'Send Me a Message',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: r.fontSize(14),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  )
-                : IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: _buildContactCard(
-                            context,
-                            r: r,
-                            icon: Icons.email_outlined,
-                            title: 'Email',
-                            value: AppConstants.email,
-                            onTap: _launchEmail,
-                          ),
-                        ),
-                        SizedBox(width: r.spacing(20)),
-                        Expanded(
-                          child: _buildContactCard(
-                            context,
-                            r: r,
-                            icon: Icons.phone_outlined,
-                            title: 'Phone',
-                            value: AppConstants.phone,
-                            onTap: () => _launchUrl('tel:${AppConstants.phone}'),
-                          ),
-                        ),
-                        SizedBox(width: r.spacing(20)),
-                        Expanded(
-                          child: _buildContactCard(
-                            context,
-                            r: r,
-                            icon: Icons.location_on_outlined,
-                            title: 'Location',
-                            value: AppConstants.location,
-                            onTap: null,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
-          ),
-          SizedBox(height: r.spacing(60)),
-          // Social links
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildSocialButton(
-                icon: FontAwesomeIcons.linkedin,
-                url: AppConstants.linkedIn,
-                label: 'LinkedIn',
-                r: r,
-              ),
-              SizedBox(width: r.spacing(20)),
-              _buildSocialButton(
-                icon: FontAwesomeIcons.github,
-                url: AppConstants.github,
-                label: 'GitHub',
-                r: r,
-              ),
-            ],
-          ),
-          SizedBox(height: r.spacing(60)),
-          // CTA Button
-          SizedBox(
-            width: r.isMobile ? double.infinity : null,
-            child: ElevatedButton(
-              onPressed: _launchEmail,
-              style: ElevatedButton.styleFrom(
-                padding: r.buttonPadding,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.send, size: r.iconSize),
-                  SizedBox(width: r.spacing(12)),
-                  Text(
-                    'Send Me a Message',
-                    style: TextStyle(fontSize: r.fontSize(14)),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -149,106 +106,105 @@ class ContactSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(
-      BuildContext context, String title, Responsive r) {
+  Widget _buildSectionHeader(Responsive r) {
     return Column(
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: r.fontSize(40),
-              ),
+        ShaderMask(
+          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+          child: Text(
+            'Get In Touch',
+            style: TextStyle(
+              fontSize: r.fontSize(32),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
-        SizedBox(height: r.spacing(16)),
+        SizedBox(height: r.spacing(12)),
         Container(
-          width: r.value(mobile: 60, desktop: 80),
+          width: 60,
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
+        SizedBox(height: r.spacing(16)),
+        Text(
+          "Have a project in mind? Let's work together!",
+          style: TextStyle(
+            color: AppTheme.subtleText,
+            fontSize: r.fontSize(14),
+          ),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
 
-  Widget _buildContactCard(
-    BuildContext context, {
-    required Responsive r,
-    required IconData icon,
-    required String title,
-    required String value,
-    required VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
+  Widget _buildContactCard(IconData icon, String title, String value, VoidCallback? onTap, Responsive r) {
+    return ClipRRect(
       borderRadius: BorderRadius.circular(r.cardRadius),
-      child: Container(
-        padding: EdgeInsets.all(r.spacing(20)),
-        decoration: BoxDecoration(
-          color: AppTheme.cardBg,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(r.cardRadius),
-          border: Border.all(
-            color: AppTheme.primaryColor.withValues(alpha: 0.2),
+          child: Container(
+            padding: EdgeInsets.all(r.spacing(20)),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(r.cardRadius),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(r.spacing(12)),
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: r.fontSize(20)),
+                ),
+                SizedBox(height: r.spacing(14)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: AppTheme.lightText,
+                    fontSize: r.fontSize(14),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: r.spacing(4)),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: onTap != null ? AppTheme.secondaryColor : AppTheme.subtleText,
+                    fontSize: r.fontSize(11),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: r.value(mobile: 12, desktop: 20),
-              offset: Offset(0, r.value(mobile: 6, desktop: 10)),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: r.value(mobile: 50, desktop: 60),
-              height: r.value(mobile: 50, desktop: 60),
-              decoration: BoxDecoration(
-                gradient: AppTheme.primaryGradient,
-                borderRadius: BorderRadius.circular(r.cardRadius * 0.7),
-              ),
-              child: Icon(icon, color: Colors.white, size: r.iconSize + 2),
-            ),
-            SizedBox(height: r.spacing(16)),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: r.fontSize(18),
-                  ),
-            ),
-            SizedBox(height: r.spacing(6)),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: onTap != null
-                        ? AppTheme.secondaryColor
-                        : AppTheme.subtleText,
-                    fontSize: r.fontSize(12),
-                  ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildSocialButton({
-    required IconData icon,
-    required String url,
-    required String label,
-    required Responsive r,
-  }) {
-    return OutlinedButton.icon(
-      onPressed: () => _launchUrl(url),
-      icon: FaIcon(icon, size: r.fontSize(18)),
-      label: Text(label, style: TextStyle(fontSize: r.fontSize(14))),
-      style: OutlinedButton.styleFrom(
-        padding: r.buttonPadding,
+  Widget _buildSocialButton(IconData icon, String url, Responsive r) {
+    return InkWell(
+      onTap: () => _launchUrl(url),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: EdgeInsets.all(r.spacing(14)),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: FaIcon(icon, color: AppTheme.lightText, size: r.fontSize(22)),
       ),
     );
   }
@@ -268,7 +224,6 @@ class ContactSection extends StatelessWidget {
       'mailto:${AppConstants.email}?subject=Hello%20from%20Portfolio',
     );
 
-    // Try Gmail web first, fallback to mailto
     if (await canLaunchUrl(gmailUrl)) {
       await launchUrl(gmailUrl, mode: LaunchMode.externalApplication);
     } else if (await canLaunchUrl(mailtoUrl)) {

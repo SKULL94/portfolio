@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../core/constants.dart';
 import '../core/theme.dart';
@@ -10,188 +11,203 @@ class ExperienceSection extends StatelessWidget {
     final r = Responsive(context);
 
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: r.horizontalPadding,
         vertical: r.sectionVerticalPadding,
       ),
       child: Column(
         children: [
-          _buildSectionTitle(context, 'Work Experience', r),
-          SizedBox(height: r.spacing(60)),
-          ...experiences.asMap().entries.map(
-                (entry) => _buildExperienceCard(context, entry.value, entry.key, r),
-              ),
+          _buildSectionHeader(r),
+          SizedBox(height: r.spacing(50)),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 900),
+            child: Column(
+              children: experiences.map((exp) => _buildExperienceCard(exp, r)).toList(),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, Responsive r) {
+  Widget _buildSectionHeader(Responsive r) {
     return Column(
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: r.fontSize(40),
-              ),
+        ShaderMask(
+          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+          child: Text(
+            'Experience',
+            style: TextStyle(
+              fontSize: r.fontSize(32),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
-        SizedBox(height: r.spacing(16)),
+        SizedBox(height: r.spacing(12)),
         Container(
-          width: r.value(mobile: 60, desktop: 80),
+          width: 60,
           height: 4,
           decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
+        SizedBox(height: r.spacing(16)),
+        Text(
+          'My professional journey',
+          style: TextStyle(
+            color: AppTheme.subtleText,
+            fontSize: r.fontSize(14),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildExperienceCard(
-      BuildContext context, Experience experience, int index, Responsive r) {
-    return Container(
-      margin: EdgeInsets.only(bottom: r.spacing(40)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!r.isMobile) ...[
-            // Timeline
-            Column(
+  Widget _buildExperienceCard(Experience exp, Responsive r) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: r.spacing(20)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(r.cardRadius),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(r.spacing(24)),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(r.cardRadius),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: r.value(mobile: 16, desktop: 20),
-                  height: r.value(mobile: 16, desktop: 20),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: AppTheme.primaryGradient,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.5),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                ),
-                if (index < experiences.length - 1)
-                  Container(
-                    width: 2,
-                    height: r.value(mobile: 200, tablet: 250, desktop: 300),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppTheme.primaryColor,
-                          AppTheme.primaryColor.withValues(alpha: 0.2),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ),
+                // Header
+                r.isMobile ? _buildMobileHeader(exp, r) : _buildDesktopHeader(exp, r),
+
+                SizedBox(height: r.spacing(20)),
+
+                // Projects
+                ...exp.projects.map((project) => _buildProjectItem(project, r)),
               ],
             ),
-            SizedBox(width: r.spacing(30)),
-          ],
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(r.spacing(24)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileHeader(Experience exp, Responsive r) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            // Company icon
+            Container(
+              padding: EdgeInsets.all(r.spacing(10)),
               decoration: BoxDecoration(
-                color: AppTheme.cardBg,
-                borderRadius: BorderRadius.circular(r.cardRadius),
-                border: Border.all(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: r.value(mobile: 12, desktop: 20),
-                    offset: Offset(0, r.value(mobile: 6, desktop: 10)),
-                  ),
-                ],
+                gradient: AppTheme.primaryGradient,
+                borderRadius: BorderRadius.circular(10),
               ),
+              child: Icon(
+                Icons.business_rounded,
+                color: Colors.white,
+                size: r.fontSize(18),
+              ),
+            ),
+            SizedBox(width: r.spacing(12)),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header - responsive layout
-                  r.isMobile
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              experience.company,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(
-                                    color: AppTheme.primaryColor,
-                                    fontSize: r.fontSize(22),
-                                  ),
-                            ),
-                            SizedBox(height: r.spacing(4)),
-                            Text(
-                              experience.role,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(fontSize: r.fontSize(16)),
-                            ),
-                            SizedBox(height: r.spacing(12)),
-                            _buildDurationBadge(experience.duration, r),
-                          ],
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    experience.company,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium
-                                        ?.copyWith(
-                                          color: AppTheme.primaryColor,
-                                          fontSize: r.fontSize(24),
-                                        ),
-                                  ),
-                                  SizedBox(height: r.spacing(4)),
-                                  Text(
-                                    experience.role,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(fontSize: r.fontSize(18)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            _buildDurationBadge(experience.duration, r),
-                          ],
-                        ),
-                  SizedBox(height: r.spacing(24)),
-                  ...experience.projects.map(
-                    (project) => _buildProjectItem(context, project, r),
+                  Text(
+                    exp.company,
+                    style: TextStyle(
+                      color: AppTheme.lightText,
+                      fontSize: r.fontSize(16),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: r.spacing(2)),
+                  Text(
+                    exp.role,
+                    style: TextStyle(
+                      color: AppTheme.primaryColor,
+                      fontSize: r.fontSize(12),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
             ),
+          ],
+        ),
+        SizedBox(height: r.spacing(12)),
+        _buildDurationBadge(exp.duration, r),
+      ],
+    );
+  }
+
+  Widget _buildDesktopHeader(Experience exp, Responsive r) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Company icon
+        Container(
+          padding: EdgeInsets.all(r.spacing(12)),
+          decoration: BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
-      ),
+          child: Icon(
+            Icons.business_rounded,
+            color: Colors.white,
+            size: r.fontSize(20),
+          ),
+        ),
+        SizedBox(width: r.spacing(16)),
+        // Company info
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                exp.company,
+                style: TextStyle(
+                  color: AppTheme.lightText,
+                  fontSize: r.fontSize(18),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: r.spacing(4)),
+              Text(
+                exp.role,
+                style: TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontSize: r.fontSize(14),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Duration badge
+        _buildDurationBadge(exp.duration, r),
+      ],
     );
   }
 
   Widget _buildDurationBadge(String duration, Responsive r) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: r.spacing(16),
-        vertical: r.spacing(8),
+        horizontal: r.spacing(12),
+        vertical: r.spacing(6),
       ),
       decoration: BoxDecoration(
-        color: AppTheme.secondaryColor.withValues(alpha: 0.1),
+        color: AppTheme.secondaryColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: AppTheme.secondaryColor.withValues(alpha: 0.3),
@@ -201,24 +217,21 @@ class ExperienceSection extends StatelessWidget {
         duration,
         style: TextStyle(
           color: AppTheme.secondaryColor,
-          fontSize: r.fontSize(13),
-          fontWeight: FontWeight.w500,
+          fontSize: r.fontSize(11),
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
 
-  Widget _buildProjectItem(
-      BuildContext context, Project project, Responsive r) {
+  Widget _buildProjectItem(Project project, Responsive r) {
     return Container(
-      margin: EdgeInsets.only(bottom: r.spacing(20)),
+      margin: EdgeInsets.only(bottom: r.spacing(12)),
       padding: EdgeInsets.all(r.spacing(16)),
       decoration: BoxDecoration(
-        color: AppTheme.darkBg.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(r.cardRadius * 0.6),
-        border: Border.all(
-          color: AppTheme.subtleText.withValues(alpha: 0.1),
-        ),
+        color: AppTheme.cardBg.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(r.cardRadius - 4),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,58 +239,63 @@ class ExperienceSection extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.folder_outlined,
+                Icons.folder_rounded,
                 color: AppTheme.secondaryColor,
-                size: r.iconSize,
+                size: r.fontSize(16),
               ),
               SizedBox(width: r.spacing(10)),
               Expanded(
                 child: Text(
                   project.name,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: r.fontSize(15),
-                        color: AppTheme.lightText,
-                      ),
+                  style: TextStyle(
+                    color: AppTheme.lightText,
+                    fontSize: r.fontSize(13),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: r.spacing(8)),
-          Text(
-            project.description,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: r.fontSize(13),
-                ),
-          ),
-          SizedBox(height: r.spacing(12)),
-          ...project.highlights.map(
-            (highlight) => Padding(
-              padding: EdgeInsets.only(bottom: r.spacing(6)),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: r.spacing(8)),
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  SizedBox(width: r.spacing(10)),
-                  Expanded(
-                    child: Text(
-                      highlight,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontSize: r.fontSize(12),
-                          ),
-                    ),
-                  ),
-                ],
+          if (project.description.isNotEmpty) ...[
+            SizedBox(height: r.spacing(8)),
+            Text(
+              project.description,
+              style: TextStyle(
+                color: AppTheme.subtleText,
+                fontSize: r.fontSize(11),
+                height: 1.4,
               ),
             ),
-          ),
+          ],
+          SizedBox(height: r.spacing(10)),
+          ...project.highlights.map((highlight) => Padding(
+            padding: EdgeInsets.only(bottom: r.spacing(6)),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: r.spacing(5)),
+                  width: 4,
+                  height: 4,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                SizedBox(width: r.spacing(8)),
+                Expanded(
+                  child: Text(
+                    highlight,
+                    style: TextStyle(
+                      color: AppTheme.subtleText,
+                      fontSize: r.fontSize(11),
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )),
         ],
       ),
     );
