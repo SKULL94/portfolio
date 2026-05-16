@@ -1,19 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#8B5CF6"/>
-      <stop offset="100%" style="stop-color:#06B6D4"/>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
     </linearGradient>
   </defs>
 
-  <!-- Background -->
-  <rect width="1200" height="630" fill="#09090B"/>
+  <!-- Solid dark background -->
+  <rect x="0" y="0" width="1200" height="630" fill="#09090B"/>
 
-  <!-- Subtle decorative orbs -->
-  <circle cx="1050" cy="80" r="250" fill="#8B5CF6" opacity="0.08"/>
-  <circle cx="150" cy="550" r="200" fill="#06B6D4" opacity="0.06"/>
+  <!-- Decorative purple orb left -->
+  <circle cx="150" cy="315" r="300" fill="#8B5CF6" fill-opacity="0.08"/>
 
-  <!-- MZH Logo Box - centered -->
-  <rect x="450" y="165" width="300" height="300" rx="48" fill="#18181B" stroke="url(#grad)" stroke-width="4"/>
-  <text x="600" y="350" font-family="Arial, sans-serif" font-size="100" font-weight="bold" fill="url(#grad)" text-anchor="middle">MZH</text>
+  <!-- Decorative cyan orb right -->
+  <circle cx="1050" cy="315" r="300" fill="#06B6D4" fill-opacity="0.08"/>
+
+  <!-- Center glow -->
+  <circle cx="600" cy="250" r="180" fill="#8B5CF6" fill-opacity="0.15"/>
+
+  <!-- MZH Logo Box - centered at 600 -->
+  <rect x="480" y="120" width="240" height="200" rx="32" fill="#18181B" stroke="url(#textGrad)" stroke-width="3"/>
+
+  <!-- MZH Text - centered -->
+  <text x="600" y="250" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="bold" fill="url(#textGrad)" text-anchor="middle" dominant-baseline="middle">MZH</text>
+
+  <!-- Name -->
+  <text x="600" y="400" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="bold" fill="#FAFAFA" text-anchor="middle">Md Zeeshan Haider</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="460" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#A1A1AA" text-anchor="middle">Flutter Developer Portfolio</text>
+
+  <!-- Gradient accent line -->
+  <rect x="500" y="510" width="200" height="4" rx="2" fill="url(#textGrad)"/>
 </svg>
