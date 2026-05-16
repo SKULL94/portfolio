@@ -146,7 +146,7 @@ class ContactSection extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(r.cardRadius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(r.cardRadius),

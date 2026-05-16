@@ -149,7 +149,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(r.cardRadius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.05),

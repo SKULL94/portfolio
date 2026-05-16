@@ -72,7 +72,7 @@ class ExperienceSection extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(r.cardRadius),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.all(r.spacing(24)),

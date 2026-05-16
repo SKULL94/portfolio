@@ -310,7 +310,7 @@ class _HeroSectionState extends State<HeroSection>
     return ClipRRect(
       borderRadius: BorderRadius.circular(r.cardRadius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
           padding: EdgeInsets.all(padding ?? r.spacing(24)),
           decoration: BoxDecoration(
@@ -578,7 +578,7 @@ class _HeroSectionState extends State<HeroSection>
     return ClipRRect(
       borderRadius: BorderRadius.circular(r.cardRadius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
           padding: EdgeInsets.all(r.spacing(12)),
           decoration: BoxDecoration(

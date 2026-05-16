@@ -224,6 +224,12 @@ class Responsive {
     return 20;
   }
 
+  // Blur amount - reduced on mobile for performance
+  double get blurAmount {
+    if (isMobile) return 3; // Light blur on mobile
+    return 10; // Full blur on desktop
+  }
+
   // Icon sizes
   double get iconSize {
     if (isSmallPhone) return 20;

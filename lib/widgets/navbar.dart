@@ -18,7 +18,7 @@ class NavBar extends StatelessWidget {
 
     return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: r.horizontalPadding,
@@ -129,7 +129,7 @@ class NavBar extends StatelessWidget {
       builder: (context) => ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
           child: Container(
             padding: EdgeInsets.all(r.spacing(24)),
             decoration: BoxDecoration(

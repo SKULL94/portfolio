@@ -86,7 +86,7 @@ class SkillsSection extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(r.cardRadius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
           padding: EdgeInsets.all(r.spacing(20)),
           decoration: BoxDecoration(

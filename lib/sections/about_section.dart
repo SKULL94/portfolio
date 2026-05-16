@@ -163,7 +163,7 @@ class AboutSection extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(r.cardRadius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
           width: double.infinity,
           padding: EdgeInsets.all(r.spacing(24)),
@@ -198,7 +198,7 @@ class AboutSection extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(r.cardRadius - 2),
         child: Image.asset(
-          'assets/profilepic.JPG',
+          'assets/profilepic.jpg',
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => Container(
             color: AppTheme.cardBg,
