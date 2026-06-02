@@ -194,7 +194,7 @@ class ContactSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialButton(IconData icon, String url, Responsive r) {
+  Widget _buildSocialButton(FaIconData icon, String url, Responsive r) {
     return InkWell(
       onTap: () => _launchUrl(url),
       borderRadius: BorderRadius.circular(12),

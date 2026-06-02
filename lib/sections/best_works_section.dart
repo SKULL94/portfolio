@@ -692,7 +692,7 @@ class _BestWorksSectionState extends State<BestWorksSection> {
   }
 
   Widget _buildLinkButton(
-    IconData icon,
+    FaIconData icon,
     String label,
     String url,
     Responsive r,

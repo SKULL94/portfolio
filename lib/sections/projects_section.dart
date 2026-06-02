@@ -184,7 +184,7 @@ class ProjectsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(IconData icon, String url, Responsive r) {
+  Widget _buildIconButton(FaIconData icon, String url, Responsive r) {
     return InkWell(
       onTap: () => _launchUrl(url),
       borderRadius: BorderRadius.circular(8),

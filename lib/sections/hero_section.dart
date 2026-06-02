@@ -622,7 +622,7 @@ class _HeroSectionState extends State<HeroSection>
   }
 
   // SOCIAL ICON (Mobile)
-  Widget _buildSocialIcon(IconData icon, String url, Responsive r) {
+  Widget _buildSocialIcon(FaIconData icon, String url, Responsive r) {
     return InkWell(
       onTap: () => _launchUrl(url),
       borderRadius: BorderRadius.circular(12),
@@ -639,7 +639,7 @@ class _HeroSectionState extends State<HeroSection>
   }
 
   // SOCIAL BUTTON (Desktop - with label)
-  Widget _buildSocialButton(IconData icon, String url, String label, Responsive r) {
+  Widget _buildSocialButton(FaIconData icon, String url, String label, Responsive r) {
     return InkWell(
       onTap: () => _launchUrl(url),
       borderRadius: BorderRadius.circular(12),
