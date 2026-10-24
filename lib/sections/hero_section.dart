@@ -150,7 +150,7 @@ class _HeroSectionState extends State<HeroSection>
         // Stats Grid - 2x2
         Row(
           children: [
-            Expanded(child: _buildStatCard('4+', 'Years Exp', r)),
+            Expanded(child: _buildStatCard(AppConstants.yearsOfExperience, 'Years Exp', r)),
             SizedBox(width: r.spacing(12)),
             Expanded(child: _buildStatCard('10K+', 'Downloads', r)),
           ],
@@ -272,7 +272,7 @@ class _HeroSectionState extends State<HeroSection>
               ),
               child: Row(
                 children: [
-                  Expanded(child: _buildStatItem('4+', 'Years Exp', r)),
+                  Expanded(child: _buildStatItem(AppConstants.yearsOfExperience, 'Years Exp', r)),
                   _buildStatDivider(r),
                   Expanded(child: _buildStatItem('10K+', 'Downloads', r)),
                   _buildStatDivider(r),
@@ -515,7 +515,7 @@ class _HeroSectionState extends State<HeroSection>
       padding: r.spacing(20),
       child: Row(
         children: [
-          Expanded(child: _buildStatItem('4+', 'Years Exp', r)),
+          Expanded(child: _buildStatItem(AppConstants.yearsOfExperience, 'Years Exp', r)),
           _buildStatDivider(r),
           Expanded(child: _buildStatItem('10K+', 'Downloads', r)),
           _buildStatDivider(r),

@@ -285,6 +285,9 @@ class _BestWorksSectionState extends State<BestWorksSection> {
   }
 
   Widget _buildScreenshotArea(BestWork work, Responsive r) {
+    if (work.screenshots.isEmpty) {
+      return _buildNoScreenshotsPlaceholder(r);
+    }
     return Column(
       children: [
         // Image with arrows outside
@@ -514,6 +517,36 @@ class _BestWorksSectionState extends State<BestWorksSection> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNoScreenshotsPlaceholder(Responsive r) {
+    return Container(
+      width: double.infinity,
+      height: r.value(mobile: 220.0, desktop: 300.0),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(r.cardRadius - 4),
+        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.phonelink_setup_rounded,
+            size: r.fontSize(40),
+            color: AppTheme.subtleText,
+          ),
+          SizedBox(height: r.spacing(12)),
+          Text(
+            'Screenshots coming soon',
+            style: TextStyle(
+              color: AppTheme.subtleText,
+              fontSize: r.fontSize(13),
+            ),
+          ),
+        ],
       ),
     );
   }

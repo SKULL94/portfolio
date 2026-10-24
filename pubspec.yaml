@@ -66,6 +66,8 @@ flutter:
     - assets/best_works/fulcrum/
     - assets/best_works/ai-voice/
     - assets/best_works/eris-ai/
+    - assets/best_works/mettle/
+    - assets/best_works/birch/
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

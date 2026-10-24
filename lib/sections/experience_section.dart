@@ -87,6 +87,19 @@ class ExperienceSection extends StatelessWidget {
                 // Header
                 r.isMobile ? _buildMobileHeader(exp, r) : _buildDesktopHeader(exp, r),
 
+                if (exp.summary.isNotEmpty) ...[
+                  SizedBox(height: r.spacing(16)),
+                  Text(
+                    exp.summary,
+                    style: TextStyle(
+                      color: AppTheme.subtleText,
+                      fontSize: r.fontSize(13),
+                      height: 1.6,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+
                 SizedBox(height: r.spacing(20)),
 
                 // Projects

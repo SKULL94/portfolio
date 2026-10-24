@@ -179,6 +179,8 @@ class SkillsSection extends StatelessWidget {
         return Icons.smart_toy_rounded;
       case 'build':
         return Icons.build_rounded;
+      case 'tune':
+        return Icons.tune_rounded;
       default:
         return Icons.star_rounded;
     }
